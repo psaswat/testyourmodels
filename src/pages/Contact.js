@@ -1,0 +1,320 @@
+import React, { useState } from 'react';
+import {
+  Typography,
+  Box,
+  Paper,
+  Grid,
+  TextField,
+  Button,
+  useTheme,
+  Alert,
+  Snackbar,
+} from '@mui/material';
+import { Email, Phone, LocationOn, Send } from '@mui/icons-material';
+
+const Contact = () => {
+  const theme = useTheme();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Simulate form submission
+    setSnackbar({
+      open: true,
+      message: 'Thank you for your message! We\'ll get back to you soon.',
+      severity: 'success',
+    });
+    setFormData({
+      name: '',
+      email: '',
+      subject: '',
+      message: '',
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
+
+  return (
+    <Box sx={{ 
+      width: '100vw', 
+      minHeight: '100vh',
+      backgroundColor: theme.palette.background.default,
+      py: { xs: 2, sm: 3, md: 6 },
+      px: { xs: 2, sm: 3, md: 4 }
+    }}>
+      <Box sx={{ maxWidth: 'lg', mx: 'auto' }}>
+        <Box sx={{ textAlign: 'center', mb: { xs: 4, sm: 6 } }}>
+          <Typography
+            variant="h2"
+            component="h1"
+            gutterBottom
+            sx={{
+              fontFamily: '"Playfair Display", serif',
+              fontWeight: 600,
+              mb: 2,
+              fontSize: { xs: '2rem', sm: '2.5rem', md: '3.75rem' }
+            }}
+          >
+            Get in Touch
+          </Typography>
+          <Typography
+            variant="h5"
+            color="text.secondary"
+            sx={{
+              maxWidth: 600,
+              mx: 'auto',
+              lineHeight: 1.6,
+              fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' }
+            }}
+          >
+            Have a question or want to collaborate? We'd love to hear from you.
+          </Typography>
+        </Box>
+
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={8}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: { xs: 2, sm: 3, md: 4 },
+                border: `1px solid ${theme.palette.divider}`,
+                borderRadius: 2,
+              }}
+            >
+              <Typography
+                variant="h4"
+                component="h2"
+                gutterBottom
+                sx={{
+                  fontFamily: '"Playfair Display", serif',
+                  fontWeight: 600,
+                  mb: 3,
+                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' }
+                }}
+              >
+                Send us a Message
+              </Typography>
+
+              <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+                <Grid container spacing={3}>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      required
+                      variant="outlined"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          fontSize: { xs: '0.875rem', sm: '1rem' }
+                        }
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      fullWidth
+                      label="Email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      variant="outlined"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          fontSize: { xs: '0.875rem', sm: '1rem' }
+                        }
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Subject"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleInputChange}
+                      required
+                      variant="outlined"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          fontSize: { xs: '0.875rem', sm: '1rem' }
+                        }
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      required
+                      multiline
+                      rows={6}
+                      variant="outlined"
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          fontSize: { xs: '0.875rem', sm: '1rem' }
+                        }
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      size="large"
+                      startIcon={<Send />}
+                      sx={{
+                        py: { xs: 1, sm: 1.5 },
+                        px: { xs: 3, sm: 4 },
+                        fontSize: { xs: '1rem', sm: '1.1rem' },
+                      }}
+                    >
+                      Send Message
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Box>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <Paper
+              elevation={0}
+              sx={{
+                p: { xs: 2, sm: 3, md: 4 },
+                border: `1px solid ${theme.palette.divider}`,
+                borderRadius: 2,
+                height: 'fit-content',
+              }}
+            >
+              <Typography
+                variant="h5"
+                component="h3"
+                gutterBottom
+                sx={{
+                  fontFamily: '"Playfair Display", serif',
+                  fontWeight: 600,
+                  mb: 3,
+                  fontSize: { xs: '1.25rem', sm: '1.5rem' }
+                }}
+              >
+                Contact Information
+              </Typography>
+
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Email sx={{ color: theme.palette.primary.main, fontSize: { xs: '1rem', sm: '1.2rem' } }} />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                      Email
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                      hello@modernblog.com
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Phone sx={{ color: theme.palette.primary.main, fontSize: { xs: '1rem', sm: '1.2rem' } }} />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                      Phone
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                      +1 (555) 123-4567
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <LocationOn sx={{ color: theme.palette.primary.main, fontSize: { xs: '1rem', sm: '1.2rem' } }} />
+                  <Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                      Address
+                    </Typography>
+                    <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                      123 Blog Street<br />
+                      San Francisco, CA 94102
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+
+              <Box sx={{ mt: 4, pt: 3, borderTop: `1px solid ${theme.palette.divider}` }}>
+                <Typography
+                  variant="h6"
+                  component="h4"
+                  gutterBottom
+                  sx={{
+                    fontFamily: '"Playfair Display", serif',
+                    fontWeight: 600,
+                    fontSize: { xs: '1rem', sm: '1.25rem' }
+                  }}
+                >
+                  Office Hours
+                </Typography>
+                <Typography 
+                  variant="body2" 
+                  color="text.secondary" 
+                  sx={{ 
+                    lineHeight: 1.6,
+                    fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                  }}
+                >
+                  Monday - Friday: 9:00 AM - 6:00 PM<br />
+                  Saturday: 10:00 AM - 4:00 PM<br />
+                  Sunday: Closed
+                </Typography>
+              </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Box>
+  );
+};
+
+export default Contact;
+
