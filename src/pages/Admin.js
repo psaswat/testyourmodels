@@ -14,8 +14,10 @@ import {
   Alert,
   Snackbar,
   useTheme,
+  IconButton,
+  Divider,
 } from '@mui/material';
-import { Save } from '@mui/icons-material';
+import { Save, Add, Delete } from '@mui/icons-material';
 import { addPost } from '../data/posts';
 
 const Admin = () => {
@@ -29,6 +31,9 @@ const Admin = () => {
     image: '',
     isFeatured: false,
   });
+  const [mediaVersions, setMediaVersions] = useState([
+    { id: 'Prompt', label: 'Prompt', url: '', type: 'image', content: '', isPrompt: true }
+  ]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
 
@@ -37,6 +42,29 @@ const Admin = () => {
       ...formData,
       [field]: event.target.value,
     });
+  };
+
+  const handleMediaVersionChange = (index, field) => (event) => {
+    const newVersions = [...mediaVersions];
+    newVersions[index] = {
+      ...newVersions[index],
+      [field]: event.target.value,
+    };
+    setMediaVersions(newVersions);
+  };
+
+  const addMediaVersion = () => {
+    const newId = String.fromCharCode(65 + mediaVersions.length - 1); // A, B, C, D, E... (subtract 1 because Prompt is already there)
+    setMediaVersions([
+      ...mediaVersions,
+      { id: newId, label: `Version ${newId}`, url: '', type: 'image', content: '', isPrompt: false }
+    ]);
+  };
+
+  const removeMediaVersion = (index) => {
+    if (mediaVersions.length > 1) {
+      setMediaVersions(mediaVersions.filter((_, i) => i !== index));
+    }
   };
 
   const handleSubmit = (event) => {
@@ -49,12 +77,16 @@ const Admin = () => {
     }
 
     // Create new post object
+    // Filter out empty media versions
+    const validMediaVersions = mediaVersions.filter(version => version.url.trim() !== '');
+    
     const newPost = {
       title: formData.title,
       summary: formData.summary,
       content: formData.content,
       category: formData.category,
       image: formData.image || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=600&fit=crop',
+      mediaVersions: validMediaVersions.length > 0 ? validMediaVersions : undefined,
       isFeatured: formData.isFeatured,
     };
 
@@ -71,6 +103,9 @@ const Admin = () => {
       image: '',
       isFeatured: false,
     });
+    setMediaVersions([
+      { id: 'Prompt', label: 'Prompt', url: '', type: 'image', content: '', isPrompt: true }
+    ]);
     
     setShowSuccess(true);
 
@@ -200,6 +235,92 @@ const Admin = () => {
                     },
                   }}
                 />
+              </Grid>
+
+              {/* Media Versions Section */}
+              <Grid item xs={12}>
+                <Divider sx={{ my: 2 }} />
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography variant="h6" sx={{ color: theme.palette.primary.main }}>
+                    Media Versions (Optional)
+                  </Typography>
+                  <Button
+                    startIcon={<Add />}
+                    onClick={addMediaVersion}
+                    variant="outlined"
+                    size="small"
+                    sx={{ fontSize: '0.875rem' }}
+                  >
+                    Add Version
+                  </Button>
+                </Box>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Add multiple versions of your media for tabbed display. The first tab is always "Prompt" for sharing copyable prompts. Additional tabs (A, B, C, D, E) show different media versions.
+                </Typography>
+                
+                {mediaVersions.map((version, index) => (
+                  <Paper
+                    key={index}
+                    sx={{
+                      p: 2,
+                      mb: 2,
+                      border: `1px solid ${theme.palette.divider}`,
+                      borderRadius: 2,
+                      backgroundColor: version.isPrompt ? theme.palette.primary.light + '10' : 'transparent',
+                    }}
+                  >
+                    <Grid container spacing={2} alignItems="flex-start">
+                      <Grid item xs={12} sm={2}>
+                        <TextField
+                          label="Version Label"
+                          value={version.label}
+                          onChange={handleMediaVersionChange(index, 'label')}
+                          fullWidth
+                          size="small"
+                          variant="outlined"
+                          placeholder={version.isPrompt ? "Prompt" : "e.g., Original, Dark Theme"}
+                          disabled={version.isPrompt}
+                          helperText={version.isPrompt ? "Prompt tab (always first)" : ""}
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={9}>
+                        <TextField
+                          label="Media URL"
+                          value={version.url}
+                          onChange={handleMediaVersionChange(index, 'url')}
+                          fullWidth
+                          size="small"
+                          variant="outlined"
+                          placeholder="Image URL, YouTube link, or video file URL"
+                        />
+                      </Grid>
+                      <Grid item xs={12} sm={1}>
+                        <IconButton
+                          onClick={() => removeMediaVersion(index)}
+                          disabled={mediaVersions.length === 1}
+                          color="error"
+                          size="small"
+                        >
+                          <Delete />
+                        </IconButton>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          label={version.isPrompt ? "Prompt Content" : "Content for this version"}
+                          value={version.content}
+                          onChange={handleMediaVersionChange(index, 'content')}
+                          fullWidth
+                          multiline
+                          rows={4}
+                          size="small"
+                          variant="outlined"
+                          placeholder={version.isPrompt ? "Enter the prompt that users can copy and use..." : "Enter the content that should be displayed when this media version is selected..."}
+                          helperText={version.isPrompt ? "This prompt will be displayed as a copyable code snippet" : "This content will be shown below the media when this tab is selected"}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                ))}
               </Grid>
 
               <Grid item xs={12}>

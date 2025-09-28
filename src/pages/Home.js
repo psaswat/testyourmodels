@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import { PlayArrow } from '@mui/icons-material';
 import PostCard from '../components/PostCard';
+import TabbedMediaDisplay from '../components/TabbedMediaDisplay';
 import { getFeaturedPost, getHistoricalPosts, posts } from '../data/posts';
 
 const Home = () => {
@@ -20,6 +21,7 @@ const Home = () => {
   const [selectedTag, setSelectedTag] = useState(null);
   const [historicalPosts, setHistoricalPosts] = useState(getHistoricalPosts());
   const [userSelectedPost, setUserSelectedPost] = useState(false);
+  const [dynamicContent, setDynamicContent] = useState('');
 
   // Function to refresh posts data without changing selected post
   const refreshPosts = useCallback(() => {
@@ -310,6 +312,10 @@ const Home = () => {
     }
   };
 
+  const handleContentChange = (content) => {
+    setDynamicContent(content);
+  };
+
   const getFilteredPosts = () => {
     if (!selectedTag) return historicalPosts;
     return historicalPosts.filter(post => 
@@ -533,7 +539,12 @@ const Home = () => {
 
               {/* Media Section - Image or Video */}
               <Box sx={{ mb: 4 }}>
-                {renderMedia(selectedPost.image, selectedPost.title)}
+                <TabbedMediaDisplay 
+                  mediaVersions={selectedPost.mediaVersions}
+                  title={selectedPost.title}
+                  fallbackImage={selectedPost.image}
+                  onContentChange={handleContentChange}
+                />
               </Box>
 
               <Typography
@@ -545,7 +556,7 @@ const Home = () => {
                   mb: 4,
                 }}
               >
-                {selectedPost.content}
+                {dynamicContent || selectedPost.content}
               </Typography>
 
               {/* Tags Section */}

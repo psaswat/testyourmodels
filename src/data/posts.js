@@ -16,6 +16,127 @@ TypeScript adoption is also on the rise, with more teams recognizing the benefit
 
 Looking ahead, we can expect to see more emphasis on performance optimization, accessibility, and user experience. The web is becoming more powerful, and developers have more tools than ever to create amazing experiences.`,
     image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop',
+    mediaVersions: [
+      {
+        id: 'Prompt',
+        label: 'Prompt',
+        url: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop',
+        type: 'image',
+        content: `# Web Development Blog Post Prompt
+
+## Task
+Write a comprehensive blog post about the future of web development in 2024.
+
+## Requirements
+- Target audience: Web developers and tech enthusiasts
+- Length: 800-1200 words
+- Tone: Professional but accessible
+- Include current trends and future predictions
+
+## Key Points to Cover
+1. **AI Integration in Development**
+   - AI-powered code generation tools
+   - Automated debugging and testing
+   - Impact on developer productivity
+   - Future implications for the industry
+
+2. **WebAssembly (WASM) Revolution**
+   - High-performance web applications
+   - Use cases: video editors, 3D modeling, games
+   - Browser compatibility and adoption
+   - Performance benefits over JavaScript
+
+3. **React Ecosystem Evolution**
+   - Concurrent rendering features
+   - Automatic batching improvements
+   - Performance optimizations
+   - Developer experience enhancements
+
+4. **TypeScript Adoption**
+   - Benefits of static typing
+   - Large-scale application development
+   - Improved developer experience
+   - Error prevention and code quality
+
+5. **Future Trends**
+   - Performance optimization focus
+   - Accessibility improvements
+   - User experience enhancements
+   - Emerging web technologies
+
+## Writing Guidelines
+- Use clear, engaging language
+- Include specific examples and use cases
+- Maintain a forward-looking perspective
+- Balance technical depth with accessibility
+- End with actionable insights for developers
+
+## SEO Considerations
+- Include relevant keywords naturally
+- Use proper heading structure
+- Add meta descriptions
+- Optimize for search intent
+
+## Call to Action
+- Encourage reader engagement
+- Suggest further reading
+- Invite comments and discussion
+- Promote related content
+
+---
+*This prompt is designed to generate high-quality, comprehensive content about web development trends and future predictions.*`,
+        isPrompt: true
+      },
+      {
+        id: 'A',
+        label: 'Original',
+        url: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop',
+        type: 'image',
+        content: `Web development is evolving at an unprecedented pace, and 2024 brings exciting new possibilities. From AI-powered development tools to advanced frameworks, the landscape is changing rapidly.
+
+One of the most significant trends is the integration of artificial intelligence into development workflows. AI assistants can now help with code generation, debugging, and even project planning. This doesn't mean developers will be replaced, but rather that they'll be able to focus on more creative and complex problem-solving tasks.
+
+Another major development is the rise of WebAssembly (WASM), which allows high-performance applications to run in the browser. This technology is enabling complex applications like video editors and 3D modeling tools to work seamlessly in web browsers.
+
+The React ecosystem continues to grow with new features like concurrent rendering and automatic batching. These improvements make React applications faster and more responsive, especially on lower-end devices.
+
+TypeScript adoption is also on the rise, with more teams recognizing the benefits of static typing for large-scale applications. The improved developer experience and better error catching make it an essential tool for modern web development.
+
+Looking ahead, we can expect to see more emphasis on performance optimization, accessibility, and user experience. The web is becoming more powerful, and developers have more tools than ever to create amazing experiences.`
+      },
+      {
+        id: 'B', 
+        label: 'Dark Theme',
+        url: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop&sat=-50&brightness=0.3',
+        type: 'image',
+        content: `**Dark Theme Perspective on Web Development**
+
+The dark theme trend in web development reflects a broader shift towards user-centric design. Dark interfaces reduce eye strain, especially during extended coding sessions, and have become the preferred choice for many developers.
+
+From a technical standpoint, implementing dark themes requires careful consideration of color contrast, accessibility standards, and user preferences. Modern CSS custom properties and design systems make it easier than ever to create cohesive dark experiences.
+
+The psychological impact of dark themes extends beyond aesthetics. Studies show that dark interfaces can improve focus and reduce visual fatigue, making them particularly valuable for development environments and content consumption.
+
+As we move forward, the integration of dark themes with system preferences and user choice will become increasingly important. The future of web development isn't just about functionality—it's about creating experiences that adapt to user needs and preferences.`
+      },
+      {
+        id: 'C',
+        label: 'Mobile View',
+        url: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=600&fit=crop',
+        type: 'image',
+        content: `**Mobile-First Web Development**
+
+The mobile revolution has fundamentally changed how we approach web development. With over 60% of web traffic coming from mobile devices, mobile-first design is no longer optional—it's essential.
+
+Progressive Web Apps (PWAs) are bridging the gap between native and web experiences, offering offline functionality, push notifications, and app-like performance. This technology is particularly powerful for mobile users who expect seamless, fast experiences.
+
+Responsive design has evolved beyond simple breakpoints. Modern approaches include container queries, fluid typography, and adaptive layouts that respond to user context and device capabilities.
+
+The mobile development landscape is also being shaped by new frameworks and tools specifically designed for mobile performance. From optimized bundling to advanced caching strategies, the focus is on delivering exceptional mobile experiences.
+
+As we look to the future, the line between web and native will continue to blur, with web technologies becoming increasingly capable of delivering native-quality experiences on mobile devices.`
+      }
+    ],
     date: '2024-01-15T10:00:00Z',
     category: 'Technology',
     isFeatured: true,
@@ -44,6 +165,20 @@ Track your productivity patterns. Notice when you're most alert and schedule you
 
 Finally, don't forget to move. Take short walks, stretch, or do quick exercises throughout the day to maintain energy levels.`,
     image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop',
+    mediaVersions: [
+      {
+        id: 'A',
+        label: 'Workspace',
+        url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop',
+        type: 'image'
+      },
+      {
+        id: 'B',
+        label: 'Team Meeting',
+        url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop&brightness=1.2',
+        type: 'image'
+      }
+    ],
     date: '2024-01-10T14:30:00Z',
     category: 'Productivity',
     isFeatured: false,

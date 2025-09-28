@@ -2,14 +2,14 @@
 
 ## 🚀 **Next Steps for testyourmodels.com**
 
-### **1. Deploy to the Web (testyourmodels.com)**
-- [ ] **Choose hosting platform** (Netlify, Vercel, AWS, etc.)
-- [ ] **Build production version** (`npm run build`)
-- [ ] **Configure custom domain** (testyourmodels.com)
-- [ ] **Set up SSL certificate**
-- [ ] **Configure DNS settings**
-- [ ] **Test deployment** on live site
-- [ ] **Set up CI/CD** for automatic deployments
+### **1. Deploy to the Web (testyourmodels.com)** ✅ **COMPLETED**
+- [x] **Choose hosting platform** (Netlify, Vercel, AWS, etc.)
+- [x] **Build production version** (`npm run build`)
+- [x] **Configure custom domain** (testyourmodels.com)
+- [x] **Set up SSL certificate**
+- [x] **Configure DNS settings**
+- [x] **Test deployment** on live site
+- [x] **Set up CI/CD** for automatic deployments
 
 ### **2. Persist Blog Posts Created from Admin**
 - [ ] **Choose database solution**:
@@ -54,11 +54,24 @@
 - [ ] **Optimize images**
 - [ ] **Add PWA features**
 
+### **6. Tabbed Media Display**
+- [ ] **Implement tabbed image/video display**:
+  - [ ] Add tabs underneath main media container
+  - [ ] Support multiple versions of same image/video
+  - [ ] Tab labels (A, B, C, D, E or custom labels)
+  - [ ] Smooth transitions between media versions
+  - [ ] Update admin panel to support multiple media versions
+  - [ ] Store multiple media URLs per post
+  - [ ] Responsive tab design for mobile/desktop
+  - [ ] Active tab highlighting
+  - [ ] Fallback to single media if only one version exists
+
 ## 🎯 **Priority Order**
-1. **Deploy to web** (testyourmodels.com)
-2. **Add database persistence**
-3. **Add authentication for admin portal**
-4. **Advanced features** (optional)
+1. ✅ **Deploy to web** (testyourmodels.com) - **COMPLETED**
+2. **Implement tabbed media display** - **NEXT PRIORITY**
+3. **Add database persistence**
+4. **Add authentication for admin portal**
+5. **Advanced features** (optional)
 
 ## 📝 **Notes**
 - Current posts are stored in memory (lost on server restart)
