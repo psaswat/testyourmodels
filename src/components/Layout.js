@@ -14,16 +14,21 @@ import {
   useMediaQuery,
   Container,
 } from '@mui/material';
-import { Menu, Brightness4, Brightness7, AdminPanelSettings } from '@mui/icons-material';
+import { Menu, Brightness4, Brightness7, AdminPanelSettings, Login } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme as useThemeContext } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import SearchBar from './SearchBar';
+import SignIn from './SignIn';
+import UserProfile from './UserProfile';
 
 const Layout = ({ children }) => {
   const muiTheme = useTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down('md'));
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [signInOpen, setSignInOpen] = useState(false);
   const { isDarkMode, toggleTheme } = useThemeContext();
+  const { isAuthenticated } = useAuth();
   const location = useLocation();
 
   const handleDrawerToggle = () => {
@@ -34,7 +39,7 @@ const Layout = ({ children }) => {
     { text: 'Home', path: '/' },
     { text: 'About', path: '/about' },
     { text: 'Contact', path: '/contact' },
-    { text: 'Admin', path: '/admin' },
+    ...(isAuthenticated ? [{ text: 'Admin', path: '/admin' }] : []),
   ];
 
   const drawer = (
@@ -133,12 +138,32 @@ const Layout = ({ children }) => {
           {/* Spacer to push search and theme toggle to the right */}
           <Box sx={{ flexGrow: 1 }} />
 
-          {/* Search Bar and Theme Toggle */}
+          {/* Search Bar, Auth, and Theme Toggle */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
             {!isMobile && (
               <Box sx={{ width: 200, mr: 2 }}>
                 <SearchBar />
               </Box>
+            )}
+
+            {/* Authentication Section */}
+            {isAuthenticated ? (
+              <UserProfile />
+            ) : (
+              <Button
+                startIcon={<Login />}
+                onClick={() => setSignInOpen(true)}
+                sx={{
+                  color: muiTheme.palette.text.primary,
+                  textTransform: 'none',
+                  fontWeight: 500,
+                  '&:hover': {
+                    backgroundColor: muiTheme.palette.action.hover,
+                  },
+                }}
+              >
+                Sign In
+              </Button>
             )}
             
             <IconButton 
@@ -202,6 +227,12 @@ const Layout = ({ children }) => {
           </Typography>
         </Container>
       </Box>
+
+      {/* Sign In Dialog */}
+      <SignIn 
+        open={signInOpen} 
+        onClose={() => setSignInOpen(false)} 
+      />
     </Box>
   );
 };

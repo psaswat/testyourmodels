@@ -8,6 +8,7 @@
     "@mui/icons-material": "^5.14.19",
     "@mui/material": "^5.14.20",
     "@mui/system": "^5.14.20",
+    "firebase": "^12.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.1",
@@ -39,4 +40,3 @@
     ]
   }
 }
-
