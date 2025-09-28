@@ -22,16 +22,10 @@ const TabbedMediaDisplay = ({ mediaVersions, title, fallbackImage, onContentChan
   const [copySuccess, setCopySuccess] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // If no mediaVersions or only one version, render without tabs
-  if (!mediaVersions || mediaVersions.length <= 1) {
-    const mediaUrl = mediaVersions?.[0]?.url || fallbackImage;
-    return renderSingleMedia(mediaUrl, title, theme);
-  }
-
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
     // Notify parent component about content change
-    if (onContentChange && mediaVersions[newValue]) {
+    if (onContentChange && mediaVersions && mediaVersions[newValue]) {
       onContentChange(mediaVersions[newValue].content || '');
     }
   };
@@ -42,6 +36,12 @@ const TabbedMediaDisplay = ({ mediaVersions, title, fallbackImage, onContentChan
       onContentChange(mediaVersions[activeTab].content || '');
     }
   }, [onContentChange, mediaVersions, activeTab]);
+
+  // If no mediaVersions or only one version, render without tabs
+  if (!mediaVersions || mediaVersions.length <= 1) {
+    const mediaUrl = mediaVersions?.[0]?.url || fallbackImage;
+    return renderSingleMedia(mediaUrl, title, theme);
+  }
 
   const handleCopyPrompt = async () => {
     const currentVersion = mediaVersions[activeTab];
