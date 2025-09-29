@@ -15,9 +15,6 @@
 ### **2. Persist Blog Posts Created from Admin** ✅ **COMPLETED**
 - [x] **Choose database solution**:
   - [x] Firebase Firestore (easiest)
-  - [ ] MongoDB Atlas
-  - [ ] Supabase
-  - [ ] PostgreSQL
 - [x] **Set up database connection**
 - [x] **Update admin panel** to save to database
 - [x] **Update posts loading** to fetch from database
@@ -29,9 +26,6 @@
 ### **3. Authentication for Admin Portal** ✅ **COMPLETED**
 - [x] **Choose authentication solution**:
   - [x] Firebase Auth (easiest, integrates well with Firestore)
-  - [ ] Auth0 (professional, feature-rich)
-  - [ ] NextAuth.js (if using Next.js)
-  - [ ] Custom JWT authentication
 - [x] **Set up authentication provider**
 - [x] **Create login page** for admin access
 - [x] **Protect admin routes** (/admin)
@@ -40,13 +34,6 @@
 - [x] **Add password reset** functionality
 - [x] **Test authentication flow**
 
-### **4. Advanced Features**
-- [ ] **Image upload** (Cloudinary, AWS S3)
-- [ ] **Rich text editor** for posts
-- [ ] **Post categories and tags** management
-- [ ] **Comments system**
-- [ ] **Newsletter subscription**
-- [ ] **Analytics integration**
 
 ### **5. Performance & SEO**
 - [ ] **Add meta tags** for SEO
@@ -67,12 +54,44 @@
   - [x] Active tab highlighting
   - [x] Fallback to single media if only one version exists
 
+### **7. Admin Panel Management** - **NEXT PRIORITY**
+- [ ] **View all posts**:
+  - [ ] Create posts list view in admin panel
+  - [ ] Show post title, date, category, status
+  - [ ] Add pagination for large post lists
+  - [ ] Add search/filter functionality
+- [ ] **Edit existing posts**:
+  - [ ] Pre-populate form with existing post data
+  - [ ] Update post in Firestore
+  - [ ] Show success/error messages
+- [ ] **Disable/enable posts**:
+  - [ ] Add status field to posts (active/inactive)
+  - [ ] Toggle post visibility
+  - [ ] Update UI to show post status
+- [ ] **Delete posts**:
+  - [ ] Add delete confirmation dialog
+  - [ ] Remove post from Firestore
+  - [ ] Update UI after deletion
+
+### **8. Homepage Layout Improvements** - **NEXT PRIORITY**
+- [ ] **Move past posts to left sidebar**:
+  - [ ] Change layout from bottom grid to left sidebar
+  - [ ] Show recent posts in sidebar
+  - [ ] Add click to select post functionality
+- [ ] **Fix smartphone display**:
+  - [ ] Optimize layout for mobile screens
+  - [ ] Fix responsive breakpoints
+  - [ ] Improve touch interactions
+  - [ ] Test on various mobile devices
+
 ## 🎯 **Priority Order**
 1. ✅ **Deploy to web** (testyourmodels.com) - **COMPLETED**
 2. ✅ **Implement tabbed media display** - **COMPLETED**
 3. ✅ **Add authentication for admin portal** - **COMPLETED**
 4. ✅ **Add database persistence** - **COMPLETED**
-5. **Advanced features** - **NEXT PRIORITY**
+5. **Admin Panel Management** - **NEXT PRIORITY**
+6. **Homepage Layout Improvements** - **NEXT PRIORITY**
+7. **Advanced features** - **FUTURE**
 
 ## 📝 **Notes**
 - ✅ **Posts now persist** in Firebase Firestore (no data loss)
