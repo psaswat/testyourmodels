@@ -1,13 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
-  onAuthStateChanged,
-  GoogleAuthProvider,
-  signInWithPopup,
-  FacebookAuthProvider,
-  updateProfile
+  onAuthStateChanged
 } from 'firebase/auth';
 import { auth } from '../firebase/config';
 
@@ -76,58 +71,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const signUp = async (email, password, displayName) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
-      // Update the user's display name
-      if (displayName) {
-        await updateProfile(userCredential.user, {
-          displayName: displayName
-        });
-      }
-      
-      return { success: true };
-    } catch (error) {
-      let errorMessage = 'Sign up failed';
-      
-      switch (error.code) {
-        case 'auth/email-already-in-use':
-          errorMessage = 'An account with this email already exists';
-          break;
-        case 'auth/weak-password':
-          errorMessage = 'Password should be at least 6 characters';
-          break;
-        case 'auth/invalid-email':
-          errorMessage = 'Invalid email address';
-          break;
-        default:
-          errorMessage = error.message;
-      }
-      
-      return { success: false, error: errorMessage };
-    }
-  };
-
-  const signInWithGoogle = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  };
-
-  const signInWithFacebook = async () => {
-    try {
-      const provider = new FacebookAuthProvider();
-      await signInWithPopup(auth, provider);
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  };
 
   const signOut = async () => {
     try {
@@ -141,9 +84,6 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     signIn,
-    signUp,
-    signInWithGoogle,
-    signInWithFacebook,
     signOut,
     isAuthenticated: !!user,
   };
