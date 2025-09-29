@@ -1,5 +1,7 @@
-// Sample blog posts data
-let posts = [
+import { getPosts, getFeaturedPost, getHistoricalPosts, searchPosts, createPost } from '../services/firestoreService';
+
+// Sample blog posts data (fallback for development)
+let staticPosts = [
   {
     id: '1',
     title: 'The Future of Web Development in 2024',
@@ -295,25 +297,86 @@ This tutorial provides a solid foundation for building React applications. Pract
   },
 ];
 
-// Function to get the featured post (most recent post marked as featured)
-export const getFeaturedPost = () => {
-  const featuredPosts = posts.filter(post => post.isFeatured);
+// Function to get the featured post (from Firestore)
+export const getFeaturedPostFromFirestore = async () => {
+  try {
+    const result = await getFeaturedPost();
+    if (result.success) {
+      return result.data;
+    } else {
+      console.warn('No posts in Firestore, using static data');
+      const featuredPosts = staticPosts.filter(post => post.isFeatured);
+      if (featuredPosts.length > 0) {
+        return featuredPosts[0];
+      }
+      return staticPosts.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    }
+  } catch (error) {
+    console.error('Error getting featured post from Firestore:', error);
+    const featuredPosts = staticPosts.filter(post => post.isFeatured);
+    if (featuredPosts.length > 0) {
+      return featuredPosts[0];
+    }
+    return staticPosts.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+  }
+};
+
+// Function to get historical posts (from Firestore)
+export const getHistoricalPostsFromFirestore = async () => {
+  try {
+    const result = await getHistoricalPosts();
+    if (result.success) {
+      return result.data;
+    } else {
+      console.warn('No posts in Firestore, using static data');
+      const featuredPost = getFeaturedPost();
+      return staticPosts
+        .filter(post => post.id !== featuredPost.id)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+    }
+  } catch (error) {
+    console.error('Error getting historical posts from Firestore:', error);
+    const featuredPost = getFeaturedPost();
+    return staticPosts
+      .filter(post => post.id !== featuredPost.id)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
+  }
+};
+
+// Legacy function for backward compatibility
+export const getFeaturedPostLegacy = () => {
+  const featuredPosts = staticPosts.filter(post => post.isFeatured);
   if (featuredPosts.length > 0) {
     return featuredPosts[0];
   }
   // If no featured post, return the most recent post
-  return posts.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+  return staticPosts.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
 };
 
-// Function to get historical posts (all posts except the featured one)
-export const getHistoricalPosts = () => {
-  const featuredPost = getFeaturedPost();
-  return posts
+// Legacy function for backward compatibility
+export const getHistoricalPostsLegacy = () => {
+  const featuredPost = getFeaturedPostLegacy();
+  return staticPosts
     .filter(post => post.id !== featuredPost.id)
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 };
 
-// Function to add a new post
+// Function to add a new post (to Firestore)
+export const addPostToFirestore = async (newPost) => {
+  try {
+    const result = await createPost(newPost);
+    if (result.success) {
+      return { success: true, id: result.id };
+    } else {
+      return { success: false, error: result.error };
+    }
+  } catch (error) {
+    console.error('Error adding post to Firestore:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Legacy function for backward compatibility
 export const addPost = (newPost) => {
   const post = {
     ...newPost,
@@ -322,11 +385,11 @@ export const addPost = (newPost) => {
   };
   
   // Add to the beginning of the array (most recent first)
-  posts.unshift(post);
+  staticPosts.unshift(post);
   
   // If this is marked as featured, unmark all others
   if (post.isFeatured) {
-    posts.forEach(p => {
+    staticPosts.forEach(p => {
       if (p.id !== post.id) {
         p.isFeatured = false;
       }
@@ -336,22 +399,66 @@ export const addPost = (newPost) => {
   return post;
 };
 
-// Function to get all posts
-export const getAllPosts = () => {
-  return [...posts];
+// Function to get all posts (from Firestore)
+export const getAllPostsFromFirestore = async () => {
+  try {
+    const result = await getPosts();
+    if (result.success) {
+      return result.data;
+    } else {
+      console.warn('No posts in Firestore, using static data');
+      return [...staticPosts];
+    }
+  } catch (error) {
+    console.error('Error getting posts from Firestore:', error);
+    return [...staticPosts];
+  }
 };
 
-// Function to get posts by category
+// Function to search posts (from Firestore)
+export const searchPostsFromFirestore = async (query) => {
+  try {
+    const result = await searchPosts(query);
+    if (result.success) {
+      return result.data;
+    } else {
+      console.warn('Error searching Firestore, using static data');
+      const searchTerm = query.toLowerCase();
+      return staticPosts.filter(post => 
+        post.title.toLowerCase().includes(searchTerm) ||
+        post.summary.toLowerCase().includes(searchTerm) ||
+        post.content.toLowerCase().includes(searchTerm) ||
+        post.category.toLowerCase().includes(searchTerm)
+      );
+    }
+  } catch (error) {
+    console.error('Error searching posts from Firestore:', error);
+    const searchTerm = query.toLowerCase();
+    return staticPosts.filter(post => 
+      post.title.toLowerCase().includes(searchTerm) ||
+      post.summary.toLowerCase().includes(searchTerm) ||
+      post.content.toLowerCase().includes(searchTerm) ||
+      post.category.toLowerCase().includes(searchTerm)
+    );
+  }
+};
+
+// Legacy function for backward compatibility
+export const getAllPosts = () => {
+  return [...staticPosts];
+};
+
+// Legacy function for backward compatibility
 export const getPostsByCategory = (category) => {
-  return posts.filter(post => 
+  return staticPosts.filter(post => 
     post.category.toLowerCase() === category.toLowerCase()
   );
 };
 
-// Function to search posts
-export const searchPosts = (query) => {
+// Legacy function for backward compatibility
+export const searchPostsLegacy = (query) => {
   const searchTerm = query.toLowerCase();
-  return posts.filter(post => 
+  return staticPosts.filter(post => 
     post.title.toLowerCase().includes(searchTerm) ||
     post.summary.toLowerCase().includes(searchTerm) ||
     post.content.toLowerCase().includes(searchTerm) ||
@@ -359,5 +466,5 @@ export const searchPosts = (query) => {
   );
 };
 
-export { posts };
+export { staticPosts as posts };
 

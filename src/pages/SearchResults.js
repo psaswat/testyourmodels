@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { Search, Clear } from '@mui/icons-material';
 import PostCard from '../components/PostCard';
-import { posts } from '../data/posts';
+import { posts, searchPostsLegacy, searchPostsFromFirestore } from '../data/posts';
 
 const SearchResults = () => {
   const theme = useTheme();
@@ -20,23 +20,21 @@ const SearchResults = () => {
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [searchResults, setSearchResults] = useState([]);
 
-  const searchPosts = (query) => {
+  const searchPosts = async (query) => {
     if (!query.trim()) {
       setSearchResults([]);
       return;
     }
 
-    const results = posts.filter(post => {
-      const searchTerm = query.toLowerCase();
-      return (
-        post.title.toLowerCase().includes(searchTerm) ||
-        post.summary.toLowerCase().includes(searchTerm) ||
-        post.content.toLowerCase().includes(searchTerm) ||
-        post.category.toLowerCase().includes(searchTerm)
-      );
-    });
-
-    setSearchResults(results);
+    try {
+      const results = await searchPostsFromFirestore(query);
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Error searching posts:', error);
+      // Fallback to static search
+      const results = searchPostsLegacy(query);
+      setSearchResults(results);
+    }
   };
 
   useEffect(() => {

@@ -10,33 +10,58 @@ import {
 } from '@mui/material';
 import PostCard from '../components/PostCard';
 import TabbedMediaDisplay from '../components/TabbedMediaDisplay';
-import { getFeaturedPost, getHistoricalPosts, posts } from '../data/posts';
+import { 
+  getFeaturedPostFromFirestore, 
+  getHistoricalPostsFromFirestore,
+  getFeaturedPostLegacy,
+  getHistoricalPostsLegacy,
+  posts 
+} from '../data/posts';
 
 const Home = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-  const [selectedPost, setSelectedPost] = useState(getFeaturedPost());
+  const [selectedPost, setSelectedPost] = useState(getFeaturedPostLegacy());
   const [selectedTag, setSelectedTag] = useState(null);
-  const [historicalPosts, setHistoricalPosts] = useState(getHistoricalPosts());
+  const [historicalPosts, setHistoricalPosts] = useState(getHistoricalPostsLegacy());
   const [userSelectedPost, setUserSelectedPost] = useState(false);
   const [dynamicContent, setDynamicContent] = useState('');
 
   // Function to refresh posts data without changing selected post
-  const refreshPosts = useCallback(() => {
-    // Only update historical posts, don't change the selected post if user has made a selection
-    setHistoricalPosts(getHistoricalPosts());
-    
-    // Only update selected post if user hasn't manually selected one
-    if (!userSelectedPost) {
-      setSelectedPost(getFeaturedPost());
+  const refreshPosts = useCallback(async () => {
+    try {
+      // Only update historical posts, don't change the selected post if user has made a selection
+      const historicalData = await getHistoricalPostsFromFirestore();
+      setHistoricalPosts(historicalData);
+      
+      // Only update selected post if user hasn't manually selected one
+      if (!userSelectedPost) {
+        const featuredData = await getFeaturedPostFromFirestore();
+        setSelectedPost(featuredData);
+      }
+    } catch (error) {
+      console.error('Error refreshing posts:', error);
     }
   }, [userSelectedPost]);
 
   // Update posts when the component mounts
   useEffect(() => {
-    setSelectedPost(getFeaturedPost());
-    setHistoricalPosts(getHistoricalPosts());
+    const loadPosts = async () => {
+      try {
+        const featuredData = await getFeaturedPostFromFirestore();
+        const historicalData = await getHistoricalPostsFromFirestore();
+        setSelectedPost(featuredData);
+        setHistoricalPosts(historicalData);
+      } catch (error) {
+        console.error('Error loading posts:', error);
+        // Fallback to static data
+        setSelectedPost(getFeaturedPostLegacy());
+        setHistoricalPosts(getHistoricalPostsLegacy());
+      }
+    };
+    
+    loadPosts();
   }, []);
 
   // Listen for storage events (when posts are added via admin)

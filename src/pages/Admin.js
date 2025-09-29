@@ -18,7 +18,8 @@ import {
   Divider,
 } from '@mui/material';
 import { Save, Add, Delete } from '@mui/icons-material';
-import { addPost } from '../data/posts';
+import { addPostToFirestore } from '../data/posts';
+// import { uploadFile, validateFileType, validateFileSize } from '../services/storageService';
 
 const Admin = () => {
   const theme = useTheme();
@@ -67,7 +68,7 @@ const Admin = () => {
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     
     // Validate required fields
@@ -76,43 +77,55 @@ const Admin = () => {
       return;
     }
 
-    // Create new post object
-    // Filter out empty media versions
-    const validMediaVersions = mediaVersions.filter(version => version.url.trim() !== '');
-    
-    const newPost = {
-      title: formData.title,
-      summary: formData.summary,
-      content: formData.content,
-      category: formData.category,
-      image: formData.image || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=600&fit=crop',
-      mediaVersions: validMediaVersions.length > 0 ? validMediaVersions : undefined,
-      isFeatured: formData.isFeatured,
-    };
+    try {
+      // Create new post object
+      // Filter out empty media versions
+      const validMediaVersions = mediaVersions.filter(version => version.url.trim() !== '');
+      
+      const newPost = {
+        title: formData.title,
+        summary: formData.summary,
+        content: formData.content,
+        category: formData.category,
+        image: formData.image || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=600&fit=crop',
+        mediaVersions: validMediaVersions.length > 0 ? validMediaVersions : undefined,
+        isFeatured: formData.isFeatured,
+        date: new Date().toISOString(),
+      };
 
-    // Add the post using the addPost function
-    const createdPost = addPost(newPost);
-    console.log('New post created:', createdPost);
-    
-    // Reset form
-    setFormData({
-      title: '',
-      summary: '',
-      content: '',
-      category: '',
-      image: '',
-      isFeatured: false,
-    });
-    setMediaVersions([
-      { id: 'Prompt', label: 'Prompt', url: '', type: 'image', content: '', isPrompt: true }
-    ]);
-    
-    setShowSuccess(true);
+      // Add the post to Firestore
+      const result = await addPostToFirestore(newPost);
+      
+      if (result.success) {
+        console.log('New post created with ID:', result.id);
+        
+        // Reset form
+        setFormData({
+          title: '',
+          summary: '',
+          content: '',
+          category: '',
+          image: '',
+          isFeatured: false,
+        });
+        setMediaVersions([
+          { id: 'Prompt', label: 'Prompt', url: '', type: 'image', content: '', isPrompt: true }
+        ]);
+        
+        setShowSuccess(true);
 
-    // Navigate to home page after a short delay to see the new post
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
+        // Navigate to home page after a short delay to see the new post
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
+      } else {
+        console.error('Error creating post:', result.error);
+        setShowError(true);
+      }
+    } catch (error) {
+      console.error('Error creating post:', error);
+      setShowError(true);
+    }
   };
 
   const handleCloseSnackbar = () => {
