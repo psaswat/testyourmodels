@@ -4,8 +4,6 @@ import {
   Typography,
   Box,
   Paper,
-  useTheme,
-  useMediaQuery,
   Chip,
 } from '@mui/material';
 import PostCard from '../components/PostCard';
@@ -14,498 +12,255 @@ import {
   getFeaturedPostFromFirestore, 
   getHistoricalPostsFromFirestore,
   getFeaturedPostLegacy,
-  getHistoricalPostsLegacy,
-  posts 
+  getHistoricalPostsLegacy
 } from '../data/posts';
 
 const Home = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
-  const [selectedPost, setSelectedPost] = useState(getFeaturedPostLegacy());
+  const [selectedPost, setSelectedPost] = useState(null);
   const [selectedTag, setSelectedTag] = useState(null);
-  const [historicalPosts, setHistoricalPosts] = useState(getHistoricalPostsLegacy());
-  const [userSelectedPost, setUserSelectedPost] = useState(false);
+  const [historicalPosts, setHistoricalPosts] = useState([]);
   const [dynamicContent, setDynamicContent] = useState('');
-
-  // Function to refresh posts data without changing selected post
-  const refreshPosts = useCallback(async () => {
-    try {
-      // Only update historical posts, don't change the selected post if user has made a selection
-      const historicalData = await getHistoricalPostsFromFirestore();
-      setHistoricalPosts(historicalData);
-      
-      // Only update selected post if user hasn't manually selected one
-      if (!userSelectedPost) {
-        const featuredData = await getFeaturedPostFromFirestore();
-        setSelectedPost(featuredData);
-      }
-    } catch (error) {
-      console.error('Error refreshing posts:', error);
-    }
-  }, [userSelectedPost]);
 
   // Update posts when the component mounts
   useEffect(() => {
     const loadPosts = async () => {
       try {
+        // Try Firestore first
         const featuredData = await getFeaturedPostFromFirestore();
         const historicalData = await getHistoricalPostsFromFirestore();
         setSelectedPost(featuredData);
         setHistoricalPosts(historicalData);
       } catch (error) {
-        console.error('Error loading posts:', error);
+        console.error('Error loading posts from Firestore:', error);
         // Fallback to static data
         setSelectedPost(getFeaturedPostLegacy());
         setHistoricalPosts(getHistoricalPostsLegacy());
       }
     };
-    
     loadPosts();
   }, []);
 
-  // Listen for storage events (when posts are added via admin)
-  useEffect(() => {
-    const handleStorageChange = () => {
-      refreshPosts();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [userSelectedPost, refreshPosts]);
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
-
-
-  const handlePostClick = (post) => {
-    setSelectedPost(post);
-    setSelectedTag(null); // Clear tag selection when selecting a post
-    setUserSelectedPost(true); // Mark that user has made a selection
-  };
-
+  // Handle tag clicks
   const handleTagClick = (tag) => {
-    setSelectedTag(selectedTag === tag ? null : tag);
-    setUserSelectedPost(true); // Mark that user has made a selection
-    
-    // Find a post with this tag to display
-    const taggedPost = posts.find(post => 
-      post.category.toLowerCase() === tag.toLowerCase() ||
-      post.content.toLowerCase().includes(tag.toLowerCase()) ||
-      post.title.toLowerCase().includes(tag.toLowerCase())
-    );
-    if (taggedPost) {
-      setSelectedPost(taggedPost);
-    }
+    setSelectedTag(tag);
   };
 
-  const handleContentChange = (content) => {
+  // Handle post selection
+  const handlePostSelect = (post) => {
+    setSelectedPost(post);
+    setSelectedTag(null);
+  };
+
+  // Handle content change from TabbedMediaDisplay
+  const handleContentChange = useCallback((content) => {
     setDynamicContent(content);
+  }, []);
+
+
+  // Get posts to display based on selection
+  const getPostsToDisplay = () => {
+    if (selectedTag) {
+      return historicalPosts.filter(post => 
+        post.category === selectedTag || 
+        post.tags?.includes(selectedTag)
+      );
+    }
+    return historicalPosts;
   };
 
-  const getFilteredPosts = () => {
-    if (!selectedTag) return historicalPosts;
-    return historicalPosts.filter(post => 
-      post.category.toLowerCase() === selectedTag.toLowerCase() ||
-      post.content.toLowerCase().includes(selectedTag.toLowerCase()) ||
-      post.title.toLowerCase().includes(selectedTag.toLowerCase())
-    );
-  };
-
-  const filteredPosts = getFilteredPosts();
-
-  if (isMobile) {
-    return (
-      <Box sx={{ 
-        width: '100vw', 
-        minHeight: '100vh',
-        backgroundColor: theme.palette.background.default,
-        py: { xs: 2, sm: 3 },
-        px: { xs: 2, sm: 3 }
-      }}>
-        <Box sx={{ maxWidth: 'lg', mx: 'auto' }}>
-          <Typography 
-            variant="h3" 
-            component="h1" 
-            gutterBottom 
-            sx={{ 
-              mb: 4, 
-              fontFamily: '"Playfair Display", serif',
-              fontSize: { xs: '1.75rem', sm: '2.125rem' }
-            }}
-          >
-            Featured Post
-          </Typography>
-          
-          <Box sx={{ mb: 4 }}>
-            <PostCard post={selectedPost} isFeatured={true} />
-          </Box>
-
-          <Typography 
-            variant="h4" 
-            component="h2" 
-            gutterBottom 
-            sx={{ 
-              mb: 3, 
-              fontFamily: '"Playfair Display", serif',
-              fontSize: { xs: '1.5rem', sm: '2rem' }
-            }}
-          >
-            Recent Posts
-          </Typography>
-          
-          <Grid container spacing={3}>
-            {filteredPosts.map((post) => (
-              <Grid item xs={12} sm={6} key={post.id}>
-                <PostCard post={post} />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      </Box>
-    );
-  }
+  const postsToDisplay = getPostsToDisplay();
 
   return (
-    <Box sx={{ 
-      width: '100vw', 
-      minHeight: '100vh',
-      backgroundColor: theme.palette.background.default,
-      py: { xs: 2, sm: 3, md: 4 },
-      px: { xs: 2, sm: 3, md: 4 }
-    }}>
-      <Grid container spacing={3} sx={{ height: '100%', maxWidth: '100%' }}>
-        {/* Left Sidebar - 2 columns on desktop, hidden on tablet */}
-        {!isTablet && (
-          <Grid item xs={12} md={2}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: { xs: 2, md: 3 },
-                height: 'fit-content',
-                position: 'sticky',
-                top: 100,
-                backgroundColor: 'transparent',
-                border: `1px solid ${theme.palette.divider}`,
-                borderRadius: 2,
-              }}
-            >
-              <Typography 
-                variant="h6" 
-                gutterBottom 
-                sx={{ 
-                  fontFamily: '"Playfair Display", serif',
-                  fontSize: { xs: '1.1rem', md: '1.25rem' },
-                  mb: 2
-                }}
-              >
-                Recent Posts
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-                {historicalPosts.slice(0, 6).map((post) => (
-                  <Box 
-                    key={post.id} 
-                    sx={{ 
-                      cursor: 'pointer',
-                      p: 1,
-                      borderRadius: 1,
-                      backgroundColor: selectedPost.id === post.id ? theme.palette.action.selected : 'transparent',
-                      border: selectedPost.id === post.id ? `1px solid ${theme.palette.primary.main}` : 'transparent',
-                      transition: 'all 0.2s ease-in-out',
-                      '&:hover': {
-                        backgroundColor: theme.palette.action.hover,
-                      },
-                    }}
-                    onClick={() => handlePostClick(post)}
-                  >
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontWeight: selectedPost.id === post.id ? 600 : 500,
-                        lineHeight: 1.4,
-                        fontSize: { xs: '0.8rem', md: '0.9rem' },
-                        mb: 0.5,
-                        color: selectedPost.id === post.id ? theme.palette.primary.main : 'inherit',
-                      }}
-                    >
-                      {post.title}
-                    </Typography>
-                    <Typography 
-                      variant="caption" 
-                      color="text.secondary"
-                      sx={{ 
-                        fontSize: { xs: '0.7rem', md: '0.8rem' },
-                        display: 'block'
-                      }}
-                    >
-                      {formatDate(post.date)}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Paper>
-          </Grid>
-        )}
-
-        {/* Main Content - 8 columns on desktop, 10 on tablet */}
-        <Grid item xs={12} md={isTablet ? 10 : 8}>
-          <Box sx={{ height: '100%' }}>
-            <Typography 
-              variant="h3" 
-              component="h1" 
-              gutterBottom 
+    <Box sx={{ flexGrow: 1, p: { xs: 2, md: 3 } }}>
+      <Grid container spacing={3}>
+        {/* Main Content */}
+        <Grid item xs={12} lg={8}>
+          {/* Featured Post Section */}
+          {selectedPost && (
+            <Paper 
+              elevation={3} 
               sx={{ 
                 mb: 3, 
-                fontFamily: '"Playfair Display", serif',
-                fontSize: { xs: '1.75rem', sm: '2.125rem', md: '2.5rem' }
-              }}
-            >
-              {selectedTag ? `${selectedTag} Posts` : 'Featured Post'}
-            </Typography>
-            
-            <Paper
-              elevation={0}
-              sx={{
-                p: { xs: 3, sm: 4, md: 5 },
-                border: `1px solid ${theme.palette.divider}`,
+                overflow: 'hidden',
                 borderRadius: 2,
-                height: '100%',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white'
               }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                <Typography 
-                  variant="caption" 
-                  color="text.secondary"
-                  sx={{ fontSize: { xs: '0.8rem', sm: '0.9rem' } }}
-                >
-                  {formatDate(selectedPost.date)}
+              <Box sx={{ p: 3 }}>
+                <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
+                  {selectedPost.title}
                 </Typography>
-                <Typography 
-                  variant="caption" 
-                  color="text.secondary"
-                  sx={{ fontSize: { xs: '0.8rem', sm: '0.9rem' } }}
-                >
-                  •
+                <Typography variant="h6" sx={{ mb: 2, opacity: 0.9 }}>
+                  {selectedPost.summary}
                 </Typography>
-                <Typography 
-                  variant="caption" 
-                  color="text.secondary"
-                  sx={{ fontSize: { xs: '0.8rem', sm: '0.9rem' } }}
-                >
-                  {selectedPost.category}
-                </Typography>
-              </Box>
+                
+                {/* Media Display */}
+                <Box sx={{ mb: 3 }}>
+                  <TabbedMediaDisplay
+                    mediaVersions={selectedPost.mediaVersions}
+                    title={selectedPost.title}
+                    onContentChange={handleContentChange}
+                  />
+                </Box>
 
-              <Typography
-                variant="h2"
-                component="h1"
-                gutterBottom
-                sx={{
-                  fontFamily: '"Playfair Display", serif',
-                  fontWeight: 600,
-                  lineHeight: 1.2,
-                  mb: 3,
-                  fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' }
-                }}
-              >
-                {selectedPost.title}
-              </Typography>
+                {/* Dynamic Content */}
+                {dynamicContent && (
+                  <Box sx={{ 
+                    mt: 2, 
+                    p: 2, 
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)', 
+                    borderRadius: 1,
+                    backdropFilter: 'blur(10px)'
+                  }}>
+                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
+                      {dynamicContent}
+                    </Typography>
+                  </Box>
+                )}
 
-              <Typography
-                variant="h6"
-                color="text.secondary"
-                sx={{
-                  mb: 4,
-                  lineHeight: 1.6,
-                  fontStyle: 'italic',
-                  fontSize: { xs: '1.1rem', sm: '1.3rem' }
-                }}
-              >
-                {selectedPost.summary}
-              </Typography>
-
-              {/* Media Section - Image or Video */}
-              <Box sx={{ mb: 4 }}>
-                <TabbedMediaDisplay 
-                  mediaVersions={selectedPost.mediaVersions}
-                  title={selectedPost.title}
-                  fallbackImage={selectedPost.image}
-                  onContentChange={handleContentChange}
-                />
-              </Box>
-
-              <Typography
-                variant="body1"
-                sx={{
-                  lineHeight: 1.8,
-                  whiteSpace: 'pre-line',
-                  fontSize: { xs: '0.95rem', sm: '1.05rem' },
-                  mb: 4,
-                }}
-              >
-                {dynamicContent || selectedPost.content}
-              </Typography>
-
-              {/* Tags Section */}
-              <Box sx={{ mt: 4, pt: 3, borderTop: `1px solid ${theme.palette.divider}` }}>
-                <Typography
-                  variant="h6"
-                  gutterBottom
-                  sx={{
-                    fontFamily: '"Playfair Display", serif',
-                    fontWeight: 600,
-                    fontSize: { xs: '1rem', sm: '1.25rem' },
-                    mb: 2,
-                  }}
-                >
-                  Tags
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {['Technology', 'Lifestyle', 'Productivity', 'Food', 'Health', 'Design', 'Development'].map((tag) => (
-                    <Chip
-                      key={tag}
-                      label={tag}
-                      onClick={() => handleTagClick(tag)}
-                      sx={{
-                        cursor: 'pointer',
-                        backgroundColor: selectedTag === tag ? theme.palette.primary.main : theme.palette.action.hover,
-                        color: selectedTag === tag ? 'white' : theme.palette.text.primary,
-                        fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                        '&:hover': {
-                          backgroundColor: selectedTag === tag ? theme.palette.primary.dark : theme.palette.action.selected,
-                        },
-                      }}
-                    />
-                  ))}
+                {/* Post Meta */}
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
+                  <Chip 
+                    label={selectedPost.category} 
+                    size="small" 
+                    sx={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)', 
+                      color: 'white',
+                      '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.3)' }
+                    }} 
+                  />
+                  <Chip 
+                    label={new Date(selectedPost.date).toLocaleDateString()} 
+                    size="small" 
+                    sx={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.2)', 
+                      color: 'white',
+                      '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.3)' }
+                    }} 
+                  />
                 </Box>
               </Box>
             </Paper>
-          </Box>
+          )}
+
+          {/* No Posts Message */}
+          {!selectedPost && historicalPosts.length === 0 && (
+            <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
+              <Typography variant="h5" color="text.secondary" gutterBottom>
+                Welcome to Your Blog
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                No posts yet. Sign in and create your first post in the Admin panel!
+              </Typography>
+            </Paper>
+          )}
+
+          {/* Historical Posts */}
+          {postsToDisplay.length > 0 && (
+            <Box>
+              <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
+                {selectedTag ? `${selectedTag} Posts` : 'Recent Posts'}
+              </Typography>
+              <Grid container spacing={2}>
+                {postsToDisplay.map((post, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={post.id || index}>
+                    <PostCard 
+                      post={post} 
+                      onClick={() => handlePostSelect(post)}
+                      isSelected={selectedPost?.id === post.id}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          )}
         </Grid>
 
-        {/* Right Sidebar - 2 columns on desktop, hidden on tablet */}
-        {!isTablet && (
-          <Grid item xs={12} md={2}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: { xs: 2, md: 3 },
-                height: 'fit-content',
-                position: 'sticky',
-                top: 100,
-                backgroundColor: 'transparent',
-                border: `1px solid ${theme.palette.divider}`,
-                borderRadius: 2,
-              }}
-            >
-              <Typography 
-                variant="h6" 
-                gutterBottom 
-                sx={{ 
-                  fontFamily: '"Playfair Display", serif',
-                  fontSize: { xs: '1.1rem', md: '1.25rem' },
-                  mb: 2
-                }}
-              >
+        {/* Sidebar */}
+        <Grid item xs={12} lg={4}>
+          <Box sx={{ position: 'sticky', top: 20 }}>
+            {/* Tags Section */}
+            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
                 Categories
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                {['Video', 'Music', 'Image', 'Deep Research', 'Reasoning'].map((tag) => (
+                  <Chip 
+                    key={tag} 
+                    label={tag} 
+                    onClick={() => handleTagClick(tag)}
+                    variant={selectedTag === tag ? 'filled' : 'outlined'}
+                    color={selectedTag === tag ? 'primary' : 'default'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                ))}
+              </Box>
+            </Paper>
+
+            {/* Categories Sidebar */}
+            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                Browse by Category
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                 {[
-                  { name: 'Technology', count: 12 },
-                  { name: 'Lifestyle', count: 8 },
-                  { name: 'Productivity', count: 6 },
-                  { name: 'Food', count: 4 },
-                  { name: 'Health', count: 7 }
+                  { name: 'Video', count: 0 },
+                  { name: 'Music', count: 0 },
+                  { name: 'Image', count: 0 },
+                  { name: 'Deep Research', count: 0 },
+                  { name: 'Reasoning', count: 0 }
                 ].map((category) => (
                   <Box 
                     key={category.name} 
-                    sx={{ 
-                      display: 'flex', 
-                      justifyContent: 'space-between', 
-                      alignItems: 'center',
-                      cursor: 'pointer',
-                      p: 1,
-                      borderRadius: 1,
-                      backgroundColor: selectedTag === category.name ? theme.palette.action.selected : 'transparent',
-                      '&:hover': {
-                        backgroundColor: theme.palette.action.hover,
-                      },
-                    }}
                     onClick={() => handleTagClick(category.name)}
+                    sx={{ 
+                      cursor: 'pointer', 
+                      p: 1, 
+                      borderRadius: 1,
+                      '&:hover': { backgroundColor: 'action.hover' },
+                      backgroundColor: selectedTag === category.name ? 'primary.light' : 'transparent'
+                    }}
                   >
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontSize: { xs: '0.8rem', md: '0.9rem' },
-                        fontWeight: selectedTag === category.name ? 600 : 500,
-                        color: selectedTag === category.name ? theme.palette.primary.main : 'inherit',
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        fontWeight: selectedTag === category.name ? 'bold' : 'normal',
+                        color: selectedTag === category.name ? 'primary.main' : 'text.primary'
                       }}
                     >
                       {category.name}
                     </Typography>
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      sx={{ 
-                        fontSize: { xs: '0.7rem', md: '0.8rem' },
-                        backgroundColor: theme.palette.action.hover,
-                        px: 1,
-                        py: 0.25,
-                        borderRadius: 1,
-                      }}
-                    >
-                      {category.count}
-                    </Typography>
                   </Box>
                 ))}
               </Box>
+            </Paper>
 
-              <Box sx={{ mt: 4, pt: 3, borderTop: `1px solid ${theme.palette.divider}` }}>
-                <Typography 
-                  variant="h6" 
-                  gutterBottom 
-                  sx={{ 
-                    fontFamily: '"Playfair Display", serif',
-                    fontSize: { xs: '1rem', md: '1.1rem' },
-                    mb: 2
-                  }}
-                >
-                  Popular Tags
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                  {['React', 'Design', 'Productivity', 'Tech', 'Lifestyle'].map((tag) => (
-                    <Chip
-                      key={tag}
-                      label={tag}
-                      size="small"
-                      onClick={() => handleTagClick(tag)}
-                      sx={{
-                        cursor: 'pointer',
-                        backgroundColor: selectedTag === tag ? theme.palette.primary.main : theme.palette.action.hover,
-                        color: selectedTag === tag ? 'white' : theme.palette.text.primary,
-                        fontSize: { xs: '0.7rem', md: '0.8rem' },
-                        '&:hover': {
-                          backgroundColor: selectedTag === tag ? theme.palette.primary.dark : theme.palette.action.selected,
-                        },
-                      }}
-                    />
-                  ))}
-                </Box>
+            {/* Popular Tags */}
+            <Paper elevation={2} sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                Popular Tags
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                {['Video', 'Music', 'Image', 'Deep Research', 'Reasoning'].map((tag) => (
+                  <Chip 
+                    key={tag} 
+                    label={tag} 
+                    size="small" 
+                    onClick={() => handleTagClick(tag)}
+                    variant={selectedTag === tag ? 'filled' : 'outlined'}
+                    color={selectedTag === tag ? 'primary' : 'default'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                ))}
               </Box>
             </Paper>
-          </Grid>
-        )}
+          </Box>
+        </Grid>
       </Grid>
     </Box>
   );
 };
 
 export default Home;
-

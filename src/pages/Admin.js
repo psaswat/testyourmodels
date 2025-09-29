@@ -223,13 +223,11 @@ const Admin = () => {
                       fontSize: { xs: '0.875rem', sm: '1rem' },
                     }}
                   >
-                    <MenuItem value="Technology">Technology</MenuItem>
-                    <MenuItem value="Lifestyle">Lifestyle</MenuItem>
-                    <MenuItem value="Productivity">Productivity</MenuItem>
-                    <MenuItem value="Food">Food</MenuItem>
-                    <MenuItem value="Health">Health</MenuItem>
-                    <MenuItem value="Design">Design</MenuItem>
-                    <MenuItem value="Development">Development</MenuItem>
+                    <MenuItem value="Video">Video</MenuItem>
+                    <MenuItem value="Music">Music</MenuItem>
+                    <MenuItem value="Image">Image</MenuItem>
+                    <MenuItem value="Deep Research">Deep Research</MenuItem>
+                    <MenuItem value="Reasoning">Reasoning</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
