@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { CalendarToday } from '@mui/icons-material';
 
-const PostCard = ({ post, isFeatured = false }) => {
+const PostCard = ({ post, isFeatured = false, onClick }) => {
   const theme = useTheme();
 
   const formatDate = (dateString) => {
@@ -24,11 +24,15 @@ const PostCard = ({ post, isFeatured = false }) => {
 
   return (
     <Card
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
       sx={{
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
         transition: 'transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out',
+        cursor: onClick ? 'pointer' : 'default',
         '&:hover': {
           transform: 'translateY(-4px)',
           boxShadow: theme.palette.mode === 'dark' 

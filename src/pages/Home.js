@@ -6,7 +6,6 @@ import {
   Paper,
   Chip,
 } from '@mui/material';
-import PostCard from '../components/PostCard';
 import TabbedMediaDisplay from '../components/TabbedMediaDisplay';
 import { 
   getFeaturedPostFromFirestore, 
@@ -28,8 +27,20 @@ const Home = () => {
         // Try Firestore first
         const featuredData = await getFeaturedPostFromFirestore();
         const historicalData = await getHistoricalPostsFromFirestore();
-        setSelectedPost(featuredData);
-        setHistoricalPosts(historicalData);
+        
+        // Filter out inactive posts
+        const activeHistorical = (historicalData || []).filter(post => post.isActive !== false);
+        
+        // Set featured post only if it's active
+        if (featuredData && featuredData.isActive !== false) {
+          setSelectedPost(featuredData);
+        } else if (activeHistorical.length > 0) {
+          setSelectedPost(activeHistorical[0]);
+        } else {
+          setSelectedPost(null);
+        }
+        
+        setHistoricalPosts(activeHistorical);
       } catch (error) {
         console.error('Error loading posts from Firestore:', error);
         // Fallback to static data
@@ -59,13 +70,16 @@ const Home = () => {
 
   // Get posts to display based on selection
   const getPostsToDisplay = () => {
+    // Always filter for active posts
+    const activePosts = historicalPosts.filter(post => post.isActive !== false);
+    
     if (selectedTag) {
-      return historicalPosts.filter(post => 
+      return activePosts.filter(post => 
         post.category === selectedTag || 
         post.tags?.includes(selectedTag)
       );
     }
-    return historicalPosts;
+    return activePosts;
   };
 
   const postsToDisplay = getPostsToDisplay();
@@ -73,6 +87,199 @@ const Home = () => {
   return (
     <Box sx={{ flexGrow: 1, p: { xs: 2, md: 3 } }}>
       <Grid container spacing={3}>
+        {/* Left Sidebar - Recent Posts */}
+        <Grid item xs={12} lg={4}>
+          <Box sx={{ position: 'sticky', top: 20 }}>
+            {/* Recent Posts */}
+            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
+                {selectedTag ? `${selectedTag} Posts` : 'Recent Posts'}
+              </Typography>
+              {postsToDisplay.length > 0 ? (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  {postsToDisplay.map((post, index) => (
+                    <Paper
+                      key={post.id || index}
+                      elevation={selectedPost?.id === post.id ? 3 : 1}
+                      onClick={() => handlePostSelect(post)}
+                      sx={{
+                        p: 2,
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease-in-out',
+                        border: selectedPost?.id === post.id ? '2px solid' : '1px solid',
+                        borderColor: selectedPost?.id === post.id ? 'primary.main' : 'divider',
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: 3,
+                        },
+                      }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                        <Chip
+                          label={post.category}
+                          size="small"
+                          color="primary"
+                          variant="outlined"
+                        />
+                        <Typography variant="caption" color="text.secondary">
+                          {new Date(post.date).toLocaleDateString()}
+                        </Typography>
+                      </Box>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{
+                          fontWeight: 'bold',
+                          lineHeight: 1.3,
+                          mb: 1,
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        {post.title}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          lineHeight: 1.4,
+                        }}
+                      >
+                        {post.summary}
+                      </Typography>
+                    </Paper>
+                  ))}
+                </Box>
+              ) : (
+                <Box sx={{ textAlign: 'center', py: 2 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    {selectedTag ? `No posts found in ${selectedTag}` : 'No posts available'}
+                  </Typography>
+                  {selectedTag && (
+                    <Typography 
+                      variant="body2" 
+                      color="primary" 
+                      sx={{ cursor: 'pointer', mt: 1 }}
+                      onClick={() => handleTagClick(null)}
+                    >
+                      Show all posts
+                    </Typography>
+                  )}
+                </Box>
+              )}
+            </Paper>
+
+            {/* Tags Section */}
+            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                Categories
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                <Chip 
+                  label="All" 
+                  onClick={() => handleTagClick(null)}
+                  variant={selectedTag === null ? 'filled' : 'outlined'}
+                  color={selectedTag === null ? 'primary' : 'default'}
+                  sx={{ cursor: 'pointer' }}
+                />
+                {['Video', 'Music', 'Image', 'Deep Research', 'Reasoning'].map((tag) => (
+                  <Chip 
+                    key={tag} 
+                    label={tag} 
+                    onClick={() => handleTagClick(tag)}
+                    variant={selectedTag === tag ? 'filled' : 'outlined'}
+                    color={selectedTag === tag ? 'primary' : 'default'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                ))}
+              </Box>
+            </Paper>
+
+            {/* Categories Sidebar */}
+            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                Browse by Category
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                <Box 
+                  onClick={() => handleTagClick(null)}
+                  sx={{ 
+                    cursor: 'pointer', 
+                    p: 1, 
+                    borderRadius: 1,
+                    '&:hover': { backgroundColor: 'action.hover' },
+                    backgroundColor: selectedTag === null ? 'primary.light' : 'transparent'
+                  }}
+                >
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      fontWeight: selectedTag === null ? 'bold' : 'normal',
+                      color: selectedTag === null ? 'primary.main' : 'text.primary'
+                    }}
+                  >
+                    All Posts
+                  </Typography>
+                </Box>
+                {[
+                  { name: 'Video', count: 0 },
+                  { name: 'Music', count: 0 },
+                  { name: 'Image', count: 0 },
+                  { name: 'Deep Research', count: 0 },
+                  { name: 'Reasoning', count: 0 }
+                ].map((category) => (
+                  <Box 
+                    key={category.name} 
+                    onClick={() => handleTagClick(category.name)}
+                    sx={{ 
+                      cursor: 'pointer', 
+                      p: 1, 
+                      borderRadius: 1,
+                      '&:hover': { backgroundColor: 'action.hover' },
+                      backgroundColor: selectedTag === category.name ? 'primary.light' : 'transparent'
+                    }}
+                  >
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        fontWeight: selectedTag === category.name ? 'bold' : 'normal',
+                        color: selectedTag === category.name ? 'primary.main' : 'text.primary'
+                      }}
+                    >
+                      {category.name}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            </Paper>
+
+            {/* Popular Tags */}
+            <Paper elevation={2} sx={{ p: 3 }}>
+              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                Popular Tags
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                {['Video', 'Music', 'Image', 'Deep Research', 'Reasoning'].map((tag) => (
+                  <Chip 
+                    key={tag} 
+                    label={tag} 
+                    size="small" 
+                    onClick={() => handleTagClick(tag)}
+                    variant={selectedTag === tag ? 'filled' : 'outlined'}
+                    color={selectedTag === tag ? 'primary' : 'default'}
+                    sx={{ cursor: 'pointer' }}
+                  />
+                ))}
+              </Box>
+            </Paper>
+          </Box>
+        </Grid>
+
         {/* Main Content */}
         <Grid item xs={12} lg={8}>
           {/* Featured Post Section */}
@@ -156,107 +363,6 @@ const Home = () => {
             </Paper>
           )}
 
-          {/* Historical Posts */}
-          {postsToDisplay.length > 0 && (
-            <Box>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
-                {selectedTag ? `${selectedTag} Posts` : 'Recent Posts'}
-              </Typography>
-              <Grid container spacing={2}>
-                {postsToDisplay.map((post, index) => (
-                  <Grid item xs={12} sm={6} md={4} key={post.id || index}>
-                    <PostCard 
-                      post={post} 
-                      onClick={() => handlePostSelect(post)}
-                      isSelected={selectedPost?.id === post.id}
-                    />
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
-          )}
-        </Grid>
-
-        {/* Sidebar */}
-        <Grid item xs={12} lg={4}>
-          <Box sx={{ position: 'sticky', top: 20 }}>
-            {/* Tags Section */}
-            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Categories
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {['Video', 'Music', 'Image', 'Deep Research', 'Reasoning'].map((tag) => (
-                  <Chip 
-                    key={tag} 
-                    label={tag} 
-                    onClick={() => handleTagClick(tag)}
-                    variant={selectedTag === tag ? 'filled' : 'outlined'}
-                    color={selectedTag === tag ? 'primary' : 'default'}
-                    sx={{ cursor: 'pointer' }}
-                  />
-                ))}
-              </Box>
-            </Paper>
-
-            {/* Categories Sidebar */}
-            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Browse by Category
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                {[
-                  { name: 'Video', count: 0 },
-                  { name: 'Music', count: 0 },
-                  { name: 'Image', count: 0 },
-                  { name: 'Deep Research', count: 0 },
-                  { name: 'Reasoning', count: 0 }
-                ].map((category) => (
-                  <Box 
-                    key={category.name} 
-                    onClick={() => handleTagClick(category.name)}
-                    sx={{ 
-                      cursor: 'pointer', 
-                      p: 1, 
-                      borderRadius: 1,
-                      '&:hover': { backgroundColor: 'action.hover' },
-                      backgroundColor: selectedTag === category.name ? 'primary.light' : 'transparent'
-                    }}
-                  >
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        fontWeight: selectedTag === category.name ? 'bold' : 'normal',
-                        color: selectedTag === category.name ? 'primary.main' : 'text.primary'
-                      }}
-                    >
-                      {category.name}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Paper>
-
-            {/* Popular Tags */}
-            <Paper elevation={2} sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Popular Tags
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {['Video', 'Music', 'Image', 'Deep Research', 'Reasoning'].map((tag) => (
-                  <Chip 
-                    key={tag} 
-                    label={tag} 
-                    size="small" 
-                    onClick={() => handleTagClick(tag)}
-                    variant={selectedTag === tag ? 'filled' : 'outlined'}
-                    color={selectedTag === tag ? 'primary' : 'default'}
-                    sx={{ cursor: 'pointer' }}
-                  />
-                ))}
-              </Box>
-            </Paper>
-          </Box>
         </Grid>
       </Grid>
     </Box>

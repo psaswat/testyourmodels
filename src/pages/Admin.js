@@ -16,14 +16,18 @@ import {
   useTheme,
   IconButton,
   Divider,
+  Tabs,
+  Tab,
 } from '@mui/material';
-import { Save, Add, Delete } from '@mui/icons-material';
+import { Save, Add, Delete, PostAdd, List } from '@mui/icons-material';
 import { addPostToFirestore } from '../data/posts';
+import PostsManagement from '../components/PostsManagement';
 // import { uploadFile, validateFileType, validateFileSize } from '../services/storageService';
 
 const Admin = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState(0);
   const [formData, setFormData] = useState({
     title: '',
     summary: '',
@@ -37,6 +41,10 @@ const Admin = () => {
   ]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+  };
 
   const handleInputChange = (field) => (event) => {
     setFormData({
@@ -164,8 +172,30 @@ const Admin = () => {
             fontSize: { xs: '1rem', sm: '1.25rem' },
           }}
         >
-          Add new blog posts
+          Create and manage your blog posts
         </Typography>
+
+        {/* Tabs */}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs value={activeTab} onChange={handleTabChange} aria-label="admin tabs">
+            <Tab 
+              icon={<PostAdd />} 
+              label="Create Post" 
+              iconPosition="start"
+              sx={{ minHeight: 48 }}
+            />
+            <Tab 
+              icon={<List />} 
+              label="Manage Posts" 
+              iconPosition="start"
+              sx={{ minHeight: 48 }}
+            />
+          </Tabs>
+        </Box>
+
+        {/* Tab Content */}
+        {activeTab === 0 && (
+          <>
 
         <Paper
           elevation={0}
@@ -417,6 +447,13 @@ const Admin = () => {
             </Typography>
           </Box>
         </Paper>
+          </>
+        )}
+
+        {/* Manage Posts Tab */}
+        {activeTab === 1 && (
+          <PostsManagement />
+        )}
       </Box>
 
       {/* Success Snackbar */}
