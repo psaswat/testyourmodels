@@ -9,8 +9,10 @@ import {
   useTheme,
   Alert,
   Snackbar,
+  CircularProgress,
 } from '@mui/material';
 import { Email, Phone, LocationOn, Send } from '@mui/icons-material';
+import { submitContactMessage } from '../services/contactService';
 
 const Contact = () => {
   const theme = useTheme();
@@ -25,6 +27,7 @@ const Contact = () => {
     message: '',
     severity: 'success',
   });
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -34,20 +37,53 @@ const Contact = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate form submission
-    setSnackbar({
-      open: true,
-      message: 'Thank you for your message! We\'ll get back to you soon.',
-      severity: 'success',
-    });
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: '',
-    });
+    setLoading(true);
+    
+    try {
+      const result = await submitContactMessage(formData);
+      
+      if (result.success) {
+        setSnackbar({
+          open: true,
+          message: 'Thank you for your message! We\'ll get back to you soon.',
+          severity: 'success',
+        });
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: '',
+        });
+      } else {
+        console.error('Contact form error:', result);
+        
+        // Check if it's a permission error
+        if (result.code === 'permission-denied') {
+          setSnackbar({
+            open: true,
+            message: 'Database permissions not configured. Please contact the administrator.',
+            severity: 'error',
+          });
+        } else {
+          setSnackbar({
+            open: true,
+            message: `Error: ${result.error || 'Unknown error occurred'}`,
+            severity: 'error',
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      setSnackbar({
+        open: true,
+        message: 'Sorry, there was an error sending your message. Please try again.',
+        severity: 'error',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCloseSnackbar = () => {
@@ -189,14 +225,15 @@ const Contact = () => {
                       type="submit"
                       variant="contained"
                       size="large"
-                      startIcon={<Send />}
+                      disabled={loading}
+                      startIcon={loading ? <CircularProgress size={20} /> : <Send />}
                       sx={{
                         py: { xs: 1, sm: 1.5 },
                         px: { xs: 3, sm: 4 },
                         fontSize: { xs: '1rem', sm: '1.1rem' },
                       }}
                     >
-                      Send Message
+                      {loading ? 'Sending...' : 'Send Message'}
                     </Button>
                   </Grid>
                 </Grid>

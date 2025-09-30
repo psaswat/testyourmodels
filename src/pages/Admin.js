@@ -19,9 +19,10 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
-import { Save, Add, Delete, PostAdd, List } from '@mui/icons-material';
+import { Save, Add, Delete, PostAdd, List, ContactMail } from '@mui/icons-material';
 import { addPostToFirestore } from '../data/posts';
 import PostsManagement from '../components/PostsManagement';
+import ContactManagement from '../components/ContactManagement';
 // import { uploadFile, validateFileType, validateFileSize } from '../services/storageService';
 
 const Admin = () => {
@@ -187,6 +188,12 @@ const Admin = () => {
             <Tab 
               icon={<List />} 
               label="Manage Posts" 
+              iconPosition="start"
+              sx={{ minHeight: 48 }}
+            />
+            <Tab 
+              icon={<ContactMail />} 
+              label="Contact Messages" 
               iconPosition="start"
               sx={{ minHeight: 48 }}
             />
@@ -453,6 +460,11 @@ const Admin = () => {
         {/* Manage Posts Tab */}
         {activeTab === 1 && (
           <PostsManagement />
+        )}
+
+        {/* Contact Messages Tab */}
+        {activeTab === 2 && (
+          <ContactManagement />
         )}
       </Box>
 
