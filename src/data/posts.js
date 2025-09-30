@@ -1,4 +1,4 @@
-import { getPosts, getFeaturedPost, getHistoricalPosts, searchPosts, createPost } from '../services/firestoreService';
+import { getPosts, getFeaturedPost, getHistoricalPosts, searchPosts, createPost, updatePost as updatePostFirestore, deletePost as deletePostFirestore } from '../services/firestoreService';
 
 // Clean blog posts data (fallback for development)
 let staticPosts = [
@@ -193,6 +193,36 @@ export const searchPostsLegacy = (query) => {
     post.content.toLowerCase().includes(searchTerm) ||
     post.category.toLowerCase().includes(searchTerm)
   );
+};
+
+// Function to update a post (in Firestore)
+export const updatePost = async (postId, updateData) => {
+  try {
+    const result = await updatePostFirestore(postId, updateData);
+    if (result.success) {
+      return { success: true };
+    } else {
+      return { success: false, error: result.error };
+    }
+  } catch (error) {
+    console.error('Error updating post in Firestore:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Function to delete a post (from Firestore)
+export const deletePost = async (postId) => {
+  try {
+    const result = await deletePostFirestore(postId);
+    if (result.success) {
+      return { success: true };
+    } else {
+      return { success: false, error: result.error };
+    }
+  } catch (error) {
+    console.error('Error deleting post from Firestore:', error);
+    return { success: false, error: error.message };
+  }
 };
 
 export { staticPosts as posts };
