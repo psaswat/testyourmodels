@@ -171,8 +171,8 @@ export const getHistoricalPosts = async () => {
       ...doc.data()
     }));
     
-    // Return all posts except the first one (featured)
-    const historicalPosts = posts.slice(1);
+    // Return all posts that are not featured
+    const historicalPosts = posts.filter(post => !post.isFeatured);
     return { success: true, data: historicalPosts };
   } catch (error) {
     console.error('Error getting historical posts: ', error);

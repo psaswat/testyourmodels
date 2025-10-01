@@ -45,8 +45,8 @@ const Layout = ({ children }) => {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ 
       textAlign: 'center',
-      bgcolor: '#000',
-      color: '#fff',
+      bgcolor: isDarkMode ? '#000' : '#fff',
+      color: isDarkMode ? '#fff' : '#000',
       height: '100%'
     }}>
       <Typography variant="h6" sx={{ 
@@ -81,8 +81,8 @@ const Layout = ({ children }) => {
       display: 'flex', 
       flexDirection: 'column', 
       minHeight: '100vh',
-      bgcolor: '#000',
-      color: '#fff',
+      bgcolor: isDarkMode ? '#000' : '#fff',
+      color: isDarkMode ? '#fff' : '#000',
       fontFamily: 'monospace'
     }}>
       {!isNullSocietyHome && (
@@ -90,9 +90,9 @@ const Layout = ({ children }) => {
         position="sticky" 
         elevation={0}
         sx={{ 
-          backgroundColor: 'rgba(0,0,0,0.9)',
+          backgroundColor: isDarkMode ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.9)',
           backdropFilter: 'blur(10px)',
-          borderBottom: '1px solid #333',
+          borderBottom: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0',
           zIndex: 1200,
         }}
       >
@@ -244,13 +244,13 @@ const Layout = ({ children }) => {
           py: 3,
           px: 2,
           mt: 'auto',
-          backgroundColor: '#000',
-          borderTop: '1px solid #333',
+          backgroundColor: isDarkMode ? '#000' : '#fff',
+          borderTop: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0',
         }}
       >
         <Container maxWidth="lg">
           <Typography variant="body2" sx={{ 
-            color: '#888',
+            color: isDarkMode ? '#888' : '#555',
             align: 'center',
             fontFamily: 'monospace',
             letterSpacing: '1px'

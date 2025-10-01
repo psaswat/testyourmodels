@@ -48,6 +48,16 @@ const PostsManagement = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedPost, setSelectedPost] = useState(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    title: '',
+    summary: '',
+    content: '',
+    category: '',
+    image: '',
+    isFeatured: false,
+  });
 
   const filterPosts = useCallback(() => {
     let filtered = posts;
@@ -166,6 +176,68 @@ const PostsManagement = () => {
         severity: 'error'
       });
     }
+  };
+
+  const handleEditPost = (post) => {
+    setEditingPost(post);
+    setEditFormData({
+      title: post.title || '',
+      summary: post.summary || '',
+      content: post.content || '',
+      category: post.category || '',
+      image: post.image || '',
+      isFeatured: post.isFeatured || false,
+    });
+    setEditDialogOpen(true);
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!editFormData.title || !editFormData.summary || !editFormData.content || !editFormData.category) {
+      setSnackbar({
+        open: true,
+        message: 'Please fill in all required fields',
+        severity: 'error'
+      });
+      return;
+    }
+
+    try {
+      const updatedPost = {
+        ...editingPost,
+        title: editFormData.title,
+        summary: editFormData.summary,
+        content: editFormData.content,
+        category: editFormData.category,
+        image: editFormData.image,
+        isFeatured: editFormData.isFeatured,
+        updatedAt: new Date().toISOString(),
+      };
+
+      await updatePost(editingPost.id, updatedPost);
+      setPosts(posts.map(p => p.id === editingPost.id ? updatedPost : p));
+      setEditDialogOpen(false);
+      setSnackbar({
+        open: true,
+        message: 'Post updated successfully',
+        severity: 'success'
+      });
+    } catch (error) {
+      console.error('Error updating post:', error);
+      setSnackbar({
+        open: true,
+        message: 'Error updating post',
+        severity: 'error'
+      });
+    }
+  };
+
+  const handleEditInputChange = (field) => (e) => {
+    setEditFormData({
+      ...editFormData,
+      [field]: e.target.value,
+    });
   };
 
   const handleDeleteClick = (post) => {
@@ -347,7 +419,7 @@ const PostsManagement = () => {
                     <Tooltip title="Edit Post">
                       <IconButton
                         size="small"
-                        onClick={() => {/* TODO: Implement edit */}}
+                        onClick={() => handleEditPost(post)}
                         color="primary"
                       >
                         <Edit />
@@ -421,7 +493,7 @@ const PostsManagement = () => {
           <Visibility sx={{ mr: 1 }} />
           View Post
         </MenuItem>
-        <MenuItem onClick={() => {/* TODO: Implement edit */}}>
+        <MenuItem onClick={() => { handleEditPost(selectedPost); setAnchorEl(null); }}>
           <Edit sx={{ mr: 1 }} />
           Edit Post
         </MenuItem>
@@ -439,6 +511,87 @@ const PostsManagement = () => {
           )}
         </MenuItem>
       </Menu>
+
+      {/* Edit Post Dialog */}
+      <Dialog
+        open={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Edit Post</DialogTitle>
+        <form onSubmit={handleEditSubmit}>
+          <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+              <TextField
+                label="Title"
+                value={editFormData.title}
+                onChange={handleEditInputChange('title')}
+                fullWidth
+                required
+              />
+              <TextField
+                label="Summary"
+                value={editFormData.summary}
+                onChange={handleEditInputChange('summary')}
+                fullWidth
+                multiline
+                rows={2}
+                required
+              />
+              <TextField
+                label="Content"
+                value={editFormData.content}
+                onChange={handleEditInputChange('content')}
+                fullWidth
+                multiline
+                rows={4}
+                required
+              />
+              <TextField
+                label="Category"
+                value={editFormData.category}
+                onChange={handleEditInputChange('category')}
+                fullWidth
+                required
+                select
+                SelectProps={{ native: true }}
+              >
+                <option value="">Select Category</option>
+                <option value="Video">Video</option>
+                <option value="Music">Music</option>
+                <option value="Image">Image</option>
+                <option value="Deep Research">Deep Research</option>
+                <option value="Reasoning">Reasoning</option>
+              </TextField>
+              <TextField
+                label="Image URL"
+                value={editFormData.image}
+                onChange={handleEditInputChange('image')}
+                fullWidth
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={editFormData.isFeatured}
+                    onChange={(e) => setEditFormData({ ...editFormData, isFeatured: e.target.checked })}
+                    color="primary"
+                  />
+                }
+                label="Feature this post"
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEditDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained">
+              Update Post
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
 
       {/* Snackbar for notifications */}
       <Snackbar

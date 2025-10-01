@@ -69,8 +69,8 @@ const Home = () => {
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center',
-        bgcolor: '#000',
-        color: '#fff'
+        bgcolor: isDarkMode ? '#000' : '#fff',
+        color: isDarkMode ? '#fff' : '#000'
       }}>
         <Typography variant="h6">Loading...</Typography>
       </Box>
@@ -80,8 +80,8 @@ const Home = () => {
   return (
     <Box sx={{ 
       minHeight: '100vh', 
-      bgcolor: '#000', 
-      color: '#fff',
+      bgcolor: isDarkMode ? '#000' : '#fff', 
+      color: isDarkMode ? '#fff' : '#000',
       fontFamily: 'monospace'
     }}>
       {/* Header */}
@@ -91,9 +91,9 @@ const Home = () => {
         left: 0, 
         right: 0, 
         zIndex: 1000,
-        bgcolor: 'rgba(0,0,0,0.9)',
+        bgcolor: isDarkMode ? 'rgba(0,0,0,0.9)' : 'rgba(255,255,255,0.9)',
         backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid #333'
+        borderBottom: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0'
       }}>
         <Container maxWidth="lg">
           <Box sx={{ 
@@ -105,7 +105,8 @@ const Home = () => {
             <Typography variant="h4" sx={{ 
               fontWeight: 'bold',
               fontFamily: 'monospace',
-              letterSpacing: '2px'
+              letterSpacing: '2px',
+              color: isDarkMode ? '#fff' : '#000'
             }}>
               TESTYOURMODELS
             </Typography>
@@ -113,7 +114,10 @@ const Home = () => {
             <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, alignItems: 'center' }}>
               {!isAuthenticated && (
                 <Button 
-                  sx={{ color: '#fff', textTransform: 'none' }}
+                  sx={{ 
+                    color: isDarkMode ? '#fff' : '#000', 
+                    textTransform: 'none' 
+                  }}
                   onClick={() => setSignInOpen(true)}
                 >
                   Sign In
@@ -121,7 +125,10 @@ const Home = () => {
               )}
               {isAuthenticated && (
                 <Button 
-                  sx={{ color: '#fff', textTransform: 'none' }}
+                  sx={{ 
+                    color: isDarkMode ? '#fff' : '#000', 
+                    textTransform: 'none' 
+                  }}
                   onClick={() => navigate('/admin')}
                 >
                   Admin
@@ -129,7 +136,7 @@ const Home = () => {
               )}
               <IconButton 
                 onClick={toggleTheme}
-                sx={{ color: '#fff' }}
+                sx={{ color: isDarkMode ? '#fff' : '#000' }}
               >
                 {isDarkMode ? <Brightness7 /> : <Brightness4 />}
               </IconButton>
@@ -137,7 +144,10 @@ const Home = () => {
 
             <IconButton 
               onClick={toggleSidebar}
-              sx={{ color: '#fff', display: { xs: 'block', md: 'none' } }}
+              sx={{ 
+                color: isDarkMode ? '#fff' : '#000', 
+                display: { xs: 'block', md: 'none' } 
+              }}
             >
               <MenuIcon />
             </IconButton>
@@ -152,32 +162,41 @@ const Home = () => {
         onClose={toggleSidebar}
         sx={{
           '& .MuiDrawer-paper': {
-            bgcolor: '#000',
-            color: '#fff',
+            bgcolor: isDarkMode ? '#000' : '#fff',
+            color: isDarkMode ? '#fff' : '#000',
             width: 280,
           },
         }}
       >
         <Box sx={{ p: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h6">Menu</Typography>
-            <IconButton onClick={toggleSidebar} sx={{ color: '#fff' }}>
+            <Typography variant="h6" sx={{ color: isDarkMode ? '#fff' : '#000' }}>Menu</Typography>
+            <IconButton onClick={toggleSidebar} sx={{ color: isDarkMode ? '#fff' : '#000' }}>
               <CloseIcon />
             </IconButton>
           </Box>
           <List>
             {!isAuthenticated && (
               <ListItem onClick={() => { setSignInOpen(true); toggleSidebar(); }}>
-                <ListItemText primary="Sign In" />
+                <ListItemText 
+                  primary="Sign In" 
+                  sx={{ color: isDarkMode ? '#fff' : '#000' }}
+                />
               </ListItem>
             )}
             {isAuthenticated && (
               <ListItem onClick={() => { navigate('/admin'); toggleSidebar(); }}>
-                <ListItemText primary="Admin" />
+                <ListItemText 
+                  primary="Admin" 
+                  sx={{ color: isDarkMode ? '#fff' : '#000' }}
+                />
               </ListItem>
             )}
             <ListItem onClick={() => { toggleTheme(); toggleSidebar(); }}>
-              <ListItemText primary={isDarkMode ? "Light Mode" : "Dark Mode"} />
+              <ListItemText 
+                primary={isDarkMode ? "Light Mode" : "Dark Mode"} 
+                sx={{ color: isDarkMode ? '#fff' : '#000' }}
+              />
             </ListItem>
           </List>
         </Box>
@@ -194,7 +213,8 @@ const Home = () => {
                 fontFamily: 'monospace',
                 letterSpacing: '2px',
                 mb: 4,
-                textAlign: 'center'
+                textAlign: 'center',
+                color: isDarkMode ? '#fff' : '#000'
               }}>
                 FEATURED
               </Typography>
@@ -203,8 +223,8 @@ const Home = () => {
                 <Paper 
                   key={featuredPost.id}
                   sx={{ 
-                    bgcolor: '#111',
-                    border: '1px solid #333',
+                    bgcolor: isDarkMode ? '#111' : '#f7f7f7',
+                    border: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0',
                     overflow: 'hidden',
                     position: 'relative',
                     mb: 4
@@ -216,8 +236,8 @@ const Home = () => {
                         <Chip 
                           label={featuredPost.category} 
                           sx={{ 
-                            bgcolor: '#333',
-                            color: '#fff',
+                            bgcolor: isDarkMode ? '#333' : '#e0e0e0',
+                            color: isDarkMode ? '#fff' : '#000',
                             mb: 2,
                             fontFamily: 'monospace'
                           }}
@@ -226,12 +246,13 @@ const Home = () => {
                           fontFamily: 'monospace',
                           letterSpacing: '1px',
                           mb: 2,
-                          lineHeight: 1.2
+                          lineHeight: 1.2,
+                          color: isDarkMode ? '#fff' : '#000'
                         }}>
                           {featuredPost.title}
                         </Typography>
                         <Typography variant="body1" sx={{ 
-                          color: '#888',
+                          color: isDarkMode ? '#888' : '#555',
                           mb: 3,
                           lineHeight: 1.6
                         }}>
@@ -241,12 +262,12 @@ const Home = () => {
                           variant="contained"
                           onClick={() => navigate(`/post/${featuredPost.id}`)}
                           sx={{ 
-                            bgcolor: '#fff',
-                            color: '#000',
+                            bgcolor: isDarkMode ? '#fff' : '#000',
+                            color: isDarkMode ? '#000' : '#fff',
                             fontFamily: 'monospace',
                             letterSpacing: '1px',
                             '&:hover': {
-                              bgcolor: '#ccc'
+                              bgcolor: isDarkMode ? '#ccc' : '#333'
                             }
                           }}
                         >
@@ -255,7 +276,7 @@ const Home = () => {
                       </Box>
                     </Grid>
                     <Grid item xs={12} md={6}>
-                      <Box sx={{ height: 400, bgcolor: '#222' }}>
+                      <Box sx={{ height: 400, bgcolor: isDarkMode ? '#222' : '#f0f0f0' }}>
                         <TabbedMediaDisplay 
                           mediaVersions={featuredPost.mediaVersions}
                           title={featuredPost.title}
@@ -275,7 +296,8 @@ const Home = () => {
               fontFamily: 'monospace',
               letterSpacing: '2px',
               mb: 4,
-              textAlign: 'center'
+              textAlign: 'center',
+              color: isDarkMode ? '#fff' : '#000'
             }}>
               RECENT
             </Typography>
@@ -284,19 +306,19 @@ const Home = () => {
               {historicalPosts.slice(0, 6).map((post, index) => (
                 <Grid item xs={12} sm={6} md={4} key={post.id}>
                   <Card sx={{ 
-                    bgcolor: '#111',
-                    border: '1px solid #333',
+                    bgcolor: isDarkMode ? '#111' : '#f7f7f7',
+                    border: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0',
                     height: '100%',
                     transition: 'all 0.3s ease',
                     cursor: 'pointer',
                     '&:hover': {
-                      borderColor: '#fff',
+                      borderColor: isDarkMode ? '#fff' : '#000',
                       transform: 'translateY(-4px)'
                     }
                   }}
                   onClick={() => navigate(`/post/${post.id}`)}
                   >
-                    <Box sx={{ height: 200, bgcolor: '#222' }}>
+                    <Box sx={{ height: 200, bgcolor: isDarkMode ? '#222' : '#f0f0f0' }}>
                       <TabbedMediaDisplay 
                         mediaVersions={post.mediaVersions}
                         title={post.title}
@@ -308,8 +330,8 @@ const Home = () => {
                         label={post.category} 
                         size="small"
                         sx={{ 
-                          bgcolor: '#333',
-                          color: '#fff',
+                          bgcolor: isDarkMode ? '#333' : '#e0e0e0',
+                          color: isDarkMode ? '#fff' : '#000',
                           mb: 2,
                           fontFamily: 'monospace'
                         }}
@@ -318,12 +340,13 @@ const Home = () => {
                         fontFamily: 'monospace',
                         letterSpacing: '1px',
                         mb: 1,
-                        lineHeight: 1.3
+                        lineHeight: 1.3,
+                        color: isDarkMode ? '#fff' : '#000'
                       }}>
                         {post.title}
                       </Typography>
                       <Typography variant="body2" sx={{ 
-                        color: '#888',
+                        color: isDarkMode ? '#888' : '#555',
                         lineHeight: 1.5
                       }}>
                         {post.summary}
@@ -339,23 +362,23 @@ const Home = () => {
           <Box sx={{ 
             textAlign: 'center', 
             py: 6,
-            borderTop: '1px solid #333',
+            borderTop: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0',
             mt: 8
           }}>
             <Box sx={{ mb: 3 }}>
               <Button
                 variant="outlined"
                 sx={{
-                  borderColor: '#fff',
-                  color: '#fff',
+                  borderColor: isDarkMode ? '#fff' : '#000',
+                  color: isDarkMode ? '#fff' : '#000',
                   fontFamily: 'monospace',
                   letterSpacing: '1px',
                   px: 3,
                   py: 1,
                   mr: 2,
                   '&:hover': {
-                    borderColor: '#fff',
-                    bgcolor: 'rgba(255,255,255,0.1)'
+                    borderColor: isDarkMode ? '#fff' : '#000',
+                    bgcolor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'
                   }
                 }}
                 onClick={() => navigate('/about')}
@@ -365,16 +388,16 @@ const Home = () => {
               <Button
                 variant="outlined"
                 sx={{
-                  borderColor: '#fff',
-                  color: '#fff',
+                  borderColor: isDarkMode ? '#fff' : '#000',
+                  color: isDarkMode ? '#fff' : '#000',
                   fontFamily: 'monospace',
                   letterSpacing: '1px',
                   px: 3,
                   py: 1,
                   mr: 2,
                   '&:hover': {
-                    borderColor: '#fff',
-                    bgcolor: 'rgba(255,255,255,0.1)'
+                    borderColor: isDarkMode ? '#fff' : '#000',
+                    bgcolor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'
                   }
                 }}
                 onClick={() => navigate('/contact')}
@@ -385,15 +408,15 @@ const Home = () => {
                 <Button
                   variant="outlined"
                   sx={{
-                    borderColor: '#fff',
-                    color: '#fff',
+                    borderColor: isDarkMode ? '#fff' : '#000',
+                    color: isDarkMode ? '#fff' : '#000',
                     fontFamily: 'monospace',
                     letterSpacing: '1px',
                     px: 3,
                     py: 1,
                     '&:hover': {
-                      borderColor: '#fff',
-                      bgcolor: 'rgba(255,255,255,0.1)'
+                      borderColor: isDarkMode ? '#fff' : '#000',
+                      bgcolor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)'
                     }
                   }}
                   onClick={() => navigate('/admin')}
@@ -403,7 +426,7 @@ const Home = () => {
               )}
             </Box>
             <Typography variant="body2" sx={{ 
-              color: '#888',
+              color: isDarkMode ? '#888' : '#555',
               fontFamily: 'monospace',
               letterSpacing: '1px'
             }}>

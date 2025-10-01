@@ -8,16 +8,18 @@ import {
   useTheme,
 } from '@mui/material';
 import { Person, Email, LocationOn } from '@mui/icons-material';
+import { useTheme as useThemeContext } from '../contexts/ThemeContext';
 
 const About = () => {
   const theme = useTheme();
+  const { isDarkMode } = useThemeContext();
 
   return (
     <Box sx={{ 
       width: '100vw', 
       minHeight: '100vh',
-      backgroundColor: '#000',
-      color: '#fff',
+      backgroundColor: isDarkMode ? '#000' : '#fff',
+      color: isDarkMode ? '#fff' : '#000',
       py: { xs: 2, sm: 3, md: 6 },
       px: { xs: 2, sm: 3, md: 4 },
       fontFamily: 'monospace'
@@ -45,7 +47,7 @@ const About = () => {
               mx: 'auto',
               lineHeight: 1.6,
               fontSize: { xs: '0.95rem', sm: '1.05rem', md: '1.15rem' },
-              color: '#888',
+              color: isDarkMode ? '#888' : '#555',
               fontFamily: 'monospace'
             }}
           >
@@ -59,9 +61,9 @@ const About = () => {
               elevation={0}
               sx={{
                 p: { xs: 2, sm: 3, md: 4 },
-                border: '1px solid #333',
+                border: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0',
                 borderRadius: 2,
-                bgcolor: '#111'
+                bgcolor: isDarkMode ? '#111' : '#f7f7f7'
               }}
             >
               <Typography
@@ -84,7 +86,7 @@ const About = () => {
                   lineHeight: 1.8,
                   mb: 3,
                   fontSize: { xs: '0.9rem', sm: '1rem' },
-                  color: '#ccc',
+                  color: isDarkMode ? '#ccc' : '#333',
                   fontFamily: 'monospace'
                 }}
               >
@@ -98,7 +100,7 @@ const About = () => {
                   lineHeight: 1.8,
                   mb: 3,
                   fontSize: { xs: '0.9rem', sm: '1rem' },
-                  color: '#ccc',
+                  color: isDarkMode ? '#ccc' : '#333',
                   fontFamily: 'monospace'
                 }}
               >
@@ -111,7 +113,7 @@ const About = () => {
                 sx={{
                   lineHeight: 1.8,
                   fontSize: { xs: '0.9rem', sm: '1rem' },
-                  color: '#ccc',
+                  color: isDarkMode ? '#ccc' : '#333',
                   fontFamily: 'monospace'
                 }}
               >
@@ -126,11 +128,11 @@ const About = () => {
               elevation={0}
               sx={{
                 p: { xs: 2, sm: 3, md: 4 },
-                border: '1px solid #333',
+                border: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0',
                 borderRadius: 2,
                 textAlign: 'center',
                 height: 'fit-content',
-                bgcolor: '#111'
+                bgcolor: isDarkMode ? '#111' : '#f7f7f7'
               }}
             >
               <Avatar
@@ -164,7 +166,7 @@ const About = () => {
                   lineHeight: 1.6,
                   mb: 3,
                   fontSize: { xs: '0.8rem', sm: '0.9rem' },
-                  color: '#aaa',
+                  color: isDarkMode ? '#aaa' : '#666',
                   fontFamily: 'monospace'
                 }}
               >
@@ -176,7 +178,7 @@ const About = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Email sx={{ color: theme.palette.primary.main, fontSize: { xs: '1rem', sm: '1.2rem' } }} />
                   <Box>
-                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: '#888', fontFamily: 'monospace' }}>
+                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: isDarkMode ? '#888' : '#555', fontFamily: 'monospace' }}>
                       Email
                     </Typography>
                     <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, fontFamily: 'monospace' }}>
@@ -187,7 +189,7 @@ const About = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <LocationOn sx={{ color: theme.palette.primary.main, fontSize: { xs: '1rem', sm: '1.2rem' } }} />
                   <Box>
-                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: '#888', fontFamily: 'monospace' }}>
+                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: isDarkMode ? '#888' : '#555', fontFamily: 'monospace' }}>
                       Address
                     </Typography>
                     <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, fontFamily: 'monospace' }}>
@@ -245,10 +247,10 @@ const About = () => {
                   sx={{
                     p: { xs: 2, sm: 3 },
                     height: '100%',
-                    border: '1px solid #333',
+                    border: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0',
                     borderRadius: 2,
                     transition: 'transform 0.2s ease-in-out',
-                    bgcolor: '#111',
+                    bgcolor: isDarkMode ? '#111' : '#f7f7f7',
                     '&:hover': {
                       transform: 'translateY(-4px)',
                     },
@@ -268,7 +270,7 @@ const About = () => {
                   </Typography>
                   <Typography
                     variant="body2"
-                    sx={{ lineHeight: 1.6, fontSize: { xs: '0.8rem', sm: '0.9rem' }, color: '#aaa', fontFamily: 'monospace' }}
+                    sx={{ lineHeight: 1.6, fontSize: { xs: '0.8rem', sm: '0.9rem' }, color: isDarkMode ? '#aaa' : '#666', fontFamily: 'monospace' }}
                   >
                     {category.description}
                   </Typography>

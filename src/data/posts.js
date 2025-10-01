@@ -5,18 +5,6 @@ let staticPosts = [
   // No static posts - all data comes from Firestore
 ];
 
-// Create a welcome post for when there are no posts
-const createWelcomePost = () => ({
-  id: 'welcome',
-  title: 'Welcome to Your Blog',
-  summary: 'This is your first post. Sign in and create content in the Admin panel!',
-  content: 'Welcome to your new blog! This is a placeholder post that appears when you have no content yet. Sign in to the Admin panel to create your first real post.',
-  category: 'Deep Research',
-  image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=600&fit=crop',
-  date: new Date().toISOString(),
-  isFeatured: true,
-  tags: ['welcome', 'getting-started']
-});
 
 // Function to get the featured post (from Firestore)
 export const getFeaturedPostFromFirestore = async () => {
@@ -56,13 +44,13 @@ export const getFeaturedPostsFromFirestore = async () => {
       if (featuredPosts.length > 0) {
         return featuredPosts;
       } else {
-        console.log('Using welcome post as fallback');
-        return [createWelcomePost()];
+        console.log('No featured posts found');
+        return [];
       }
     }
   } catch (error) {
     console.error('Error getting featured posts from Firestore:', error);
-    return [createWelcomePost()];
+    return [];
   }
 };
 
@@ -94,9 +82,9 @@ export const getFeaturedPostLegacy = () => {
   if (featuredPosts.length > 0) {
     return featuredPosts[0];
   }
-  // If no posts at all, return welcome post
+  // If no posts at all, return null
   if (staticPosts.length === 0) {
-    return createWelcomePost();
+    return null;
   }
   // If no featured post, return the most recent post
   return staticPosts.sort((a, b) => new Date(b.date) - new Date(a.date))[0];

@@ -13,9 +13,11 @@ import {
 } from '@mui/material';
 import { Email, Phone, LocationOn, Send } from '@mui/icons-material';
 import { submitContactMessage } from '../services/contactService';
+import { useTheme as useThemeContext } from '../contexts/ThemeContext';
 
 const Contact = () => {
   const theme = useTheme();
+  const { isDarkMode } = useThemeContext();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -92,8 +94,8 @@ const Contact = () => {
     <Box sx={{ 
       width: '100vw', 
       minHeight: '100vh',
-      backgroundColor: '#000',
-      color: '#fff',
+      backgroundColor: isDarkMode ? '#000' : '#fff',
+      color: isDarkMode ? '#fff' : '#000',
       py: { xs: 2, sm: 3, md: 6 },
       px: { xs: 2, sm: 3, md: 4 },
       fontFamily: 'monospace'
@@ -121,7 +123,7 @@ const Contact = () => {
               mx: 'auto',
               lineHeight: 1.6,
               fontSize: { xs: '0.95rem', sm: '1.05rem', md: '1.15rem' },
-              color: '#888',
+              color: isDarkMode ? '#888' : '#555',
               fontFamily: 'monospace'
             }}
           >
@@ -135,9 +137,9 @@ const Contact = () => {
               elevation={0}
               sx={{
                 p: { xs: 2, sm: 3, md: 4 },
-                border: '1px solid #333',
+                border: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0',
                 borderRadius: 2,
-                bgcolor: '#111'
+                bgcolor: isDarkMode ? '#111' : '#f7f7f7'
               }}
             >
               <Typography
@@ -249,10 +251,10 @@ const Contact = () => {
               elevation={0}
               sx={{
                 p: { xs: 2, sm: 3, md: 4 },
-                border: '1px solid #333',
+                border: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0',
                 borderRadius: 2,
                 height: 'fit-content',
-                bgcolor: '#111'
+                bgcolor: isDarkMode ? '#111' : '#f7f7f7'
               }}
             >
               <Typography
@@ -273,7 +275,7 @@ const Contact = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Email sx={{ color: theme.palette.primary.main, fontSize: { xs: '1rem', sm: '1.2rem' } }} />
                   <Box>
-                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: '#888', fontFamily: 'monospace' }}>
+                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: isDarkMode ? '#888' : '#555', fontFamily: 'monospace' }}>
                       Email
                     </Typography>
                     <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, fontFamily: 'monospace' }}>
@@ -285,7 +287,7 @@ const Contact = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Phone sx={{ color: theme.palette.primary.main, fontSize: { xs: '1rem', sm: '1.2rem' } }} />
                   <Box>
-                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: '#888', fontFamily: 'monospace' }}>
+                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: isDarkMode ? '#888' : '#555', fontFamily: 'monospace' }}>
                       Phone
                     </Typography>
                     <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, fontFamily: 'monospace' }}>
@@ -297,7 +299,7 @@ const Contact = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <LocationOn sx={{ color: theme.palette.primary.main, fontSize: { xs: '1rem', sm: '1.2rem' } }} />
                   <Box>
-                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: '#888', fontFamily: 'monospace' }}>
+                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: isDarkMode ? '#888' : '#555', fontFamily: 'monospace' }}>
                       Address
                     </Typography>
                     <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, fontFamily: 'monospace' }}>
