@@ -60,19 +60,31 @@ const TabbedMediaDisplay = ({ mediaVersions, title, fallbackImage, onContentChan
   const currentMedia = mediaVersions[activeTab];
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ 
+      width: '100%',
+      maxWidth: '100%',
+      overflow: 'hidden'
+    }}>
       {/* Media Display Area */}
-      <Box sx={{ position: 'relative', width: '100%', mb: 2 }}>
+      <Box sx={{ 
+        position: 'relative', 
+        width: '100%', 
+        mb: 2,
+        maxWidth: '100%',
+        overflow: 'hidden'
+      }}>
         <Fade in={true} timeout={300}>
           <Box>
             {currentMedia.isPrompt ? (
               <Paper
                 sx={{
-                  p: 3,
+                  p: { xs: 2, sm: 3 },
                   backgroundColor: theme.palette.mode === 'dark' ? '#1e1e1e' : '#f5f5f5',
                   border: `1px solid ${theme.palette.divider}`,
                   borderRadius: 2,
                   position: 'relative',
+                  maxWidth: '100%',
+                  overflow: 'hidden'
                 }}
               >
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -97,16 +109,17 @@ const TabbedMediaDisplay = ({ mediaVersions, title, fallbackImage, onContentChan
                   component="pre"
                   sx={{
                     fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace',
-                    fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                    fontSize: { xs: '0.75rem', sm: '0.875rem' },
                     lineHeight: 1.6,
                     color: theme.palette.text.primary,
                     whiteSpace: 'pre-wrap',
                     wordBreak: 'break-word',
                     overflow: 'auto',
-                    maxHeight: '400px',
+                    maxHeight: { xs: '300px', sm: '400px' },
                     backgroundColor: theme.palette.mode === 'dark' ? '#0d1117' : '#ffffff',
                     border: `1px solid ${theme.palette.divider}`,
                     borderRadius: 1,
+                    maxWidth: '100%',
                     p: 2,
                     m: 0,
                   }}
@@ -233,14 +246,14 @@ const renderMedia = (mediaUrl, title, type, theme) => {
     if (mediaUrl.includes('youtube.com') || mediaUrl.includes('youtu.be')) {
       const thumbnail = getYouTubeThumbnail(mediaUrl);
       return (
-        <Box sx={{ position: 'relative', width: '100%' }}>
+        <Box sx={{ position: 'relative', width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
           <Box
             component="img"
             src={thumbnail || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=600&fit=crop'}
             alt={title}
             sx={{
               width: '100%',
-              height: { xs: 280, sm: 350, md: 450 },
+              height: { xs: 200, sm: 280, md: 350 },
               objectFit: 'cover',
               borderRadius: 2,
               cursor: 'pointer',
@@ -278,14 +291,14 @@ const renderMedia = (mediaUrl, title, type, theme) => {
     if (mediaUrl.includes('vimeo.com')) {
       const thumbnail = getVimeoThumbnail(mediaUrl);
       return (
-        <Box sx={{ position: 'relative', width: '100%' }}>
+        <Box sx={{ position: 'relative', width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
           <Box
             component="img"
             src={thumbnail || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=600&fit=crop'}
             alt={title}
             sx={{
               width: '100%',
-              height: { xs: 280, sm: 350, md: 450 },
+              height: { xs: 200, sm: 280, md: 350 },
               objectFit: 'cover',
               borderRadius: 2,
               cursor: 'pointer',
@@ -329,7 +342,7 @@ const renderMedia = (mediaUrl, title, type, theme) => {
           controls
           sx={{
             width: '100%',
-            height: { xs: 280, sm: 350, md: 450 },
+            height: { xs: 200, sm: 280, md: 350 },
             objectFit: 'cover',
             borderRadius: 2,
           }}

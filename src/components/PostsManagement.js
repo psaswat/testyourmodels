@@ -127,6 +127,47 @@ const PostsManagement = () => {
     }
   };
 
+  const handleToggleFeatured = async (post) => {
+    try {
+      console.log('Toggling featured status for post:', post.id, 'Current status:', post.isFeatured);
+      
+      // Check if we're trying to feature a post and already have 3 featured posts
+      if (!post.isFeatured) {
+        const featuredCount = posts.filter(p => p.isFeatured && p.id !== post.id).length;
+        console.log('Current featured count:', featuredCount);
+        if (featuredCount >= 3) {
+          setSnackbar({
+            open: true,
+            message: 'Maximum 3 posts can be featured',
+            severity: 'warning'
+          });
+          return;
+        }
+      }
+
+      const updatedPost = {
+        ...post,
+        isFeatured: !post.isFeatured
+      };
+      
+      console.log('Updating post with:', updatedPost);
+      await updatePost(post.id, updatedPost);
+      setPosts(posts.map(p => p.id === post.id ? updatedPost : p));
+      setSnackbar({
+        open: true,
+        message: `Post ${post.isFeatured ? 'unfeatured' : 'featured'} successfully`,
+        severity: 'success'
+      });
+    } catch (error) {
+      console.error('Error toggling featured status:', error);
+      setSnackbar({
+        open: true,
+        message: 'Error updating featured status',
+        severity: 'error'
+      });
+    }
+  };
+
   const handleDeleteClick = (post) => {
     setPostToDelete(post);
     setDeleteDialogOpen(true);
@@ -284,11 +325,16 @@ const PostsManagement = () => {
                   />
                 </TableCell>
                 <TableCell>
-                  <Chip
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={post.isFeatured || false}
+                        onChange={() => handleToggleFeatured(post)}
+                        size="small"
+                        color="secondary"
+                      />
+                    }
                     label={post.isFeatured ? 'Featured' : 'Regular'}
-                    size="small"
-                    color={post.isFeatured ? 'secondary' : 'default'}
-                    variant={post.isFeatured ? 'filled' : 'outlined'}
                   />
                 </TableCell>
                 <TableCell>

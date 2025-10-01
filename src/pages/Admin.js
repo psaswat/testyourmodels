@@ -18,6 +18,8 @@ import {
   Divider,
   Tabs,
   Tab,
+  FormControlLabel,
+  Switch,
 } from '@mui/material';
 import { Save, Add, Delete, PostAdd, List, ContactMail } from '@mui/icons-material';
 import { addPostToFirestore } from '../data/posts';
@@ -99,8 +101,11 @@ const Admin = () => {
         image: formData.image || 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&h=600&fit=crop',
         mediaVersions: validMediaVersions.length > 0 ? validMediaVersions : undefined,
         isFeatured: formData.isFeatured,
+        isActive: true, // Ensure new posts are active
         date: new Date().toISOString(),
       };
+      
+      console.log('Creating new post with data:', newPost);
 
       // Add the post to Firestore
       const result = await addPostToFirestore(newPost);
@@ -384,6 +389,24 @@ const Admin = () => {
                   helperText="Write your blog post content here. Use line breaks for paragraphs."
                   sx={{
                     '& .MuiOutlinedInput-root': {
+                      fontSize: { xs: '0.875rem', sm: '1rem' },
+                    },
+                  }}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={formData.isFeatured}
+                      onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
+                      color="primary"
+                    />
+                  }
+                  label="Feature this post (up to 3 posts can be featured)"
+                  sx={{
+                    '& .MuiFormControlLabel-label': {
                       fontSize: { xs: '0.875rem', sm: '1rem' },
                     },
                   }}

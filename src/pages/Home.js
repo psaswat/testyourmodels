@@ -1,370 +1,420 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Grid,
-  Typography,
   Box,
+  Typography,
+  Container,
+  Grid,
   Paper,
+  Button,
   Chip,
+  Card,
+  CardContent,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
+import {
+  Menu as MenuIcon,
+  Close as CloseIcon,
+  Brightness4,
+  Brightness7,
+} from '@mui/icons-material';
+import { getFeaturedPostsFromFirestore, getHistoricalPostsFromFirestore } from '../data/posts';
 import TabbedMediaDisplay from '../components/TabbedMediaDisplay';
-import { 
-  getFeaturedPostFromFirestore, 
-  getHistoricalPostsFromFirestore,
-  getFeaturedPostLegacy,
-  getHistoricalPostsLegacy
-} from '../data/posts';
+import { useNavigate } from 'react-router-dom';
+import { useTheme as useThemeContext } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import SignIn from '../components/SignIn';
 
 const Home = () => {
-  const [selectedPost, setSelectedPost] = useState(null);
-  const [selectedTag, setSelectedTag] = useState(null);
+  const navigate = useNavigate();
+  const { isDarkMode, toggleTheme } = useThemeContext();
+  const { isAuthenticated } = useAuth();
+  const [featuredPosts, setFeaturedPosts] = useState([]);
   const [historicalPosts, setHistoricalPosts] = useState([]);
-  const [dynamicContent, setDynamicContent] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [signInOpen, setSignInOpen] = useState(false);
 
-  // Update posts when the component mounts
   useEffect(() => {
-    const loadPosts = async () => {
-      try {
-        // Try Firestore first
-        const featuredData = await getFeaturedPostFromFirestore();
-        const historicalData = await getHistoricalPostsFromFirestore();
-        
-        // Filter out inactive posts
-        const activeHistorical = (historicalData || []).filter(post => post.isActive !== false);
-        
-        // Set featured post only if it's active
-        if (featuredData && featuredData.isActive !== false) {
-          setSelectedPost(featuredData);
-        } else if (activeHistorical.length > 0) {
-          setSelectedPost(activeHistorical[0]);
-        } else {
-          setSelectedPost(null);
-        }
-        
-        setHistoricalPosts(activeHistorical);
-      } catch (error) {
-        console.error('Error loading posts from Firestore:', error);
-        // Fallback to static data
-        setSelectedPost(getFeaturedPostLegacy());
-        setHistoricalPosts(getHistoricalPostsLegacy());
-      }
-    };
     loadPosts();
   }, []);
 
-  // Handle tag clicks
-  const handleTagClick = (tag) => {
-    setSelectedTag(tag);
-  };
-
-  // Handle post selection
-  const handlePostSelect = (post) => {
-    setSelectedPost(post);
-    setSelectedTag(null);
-  };
-
-  // Handle content change from TabbedMediaDisplay
-  const handleContentChange = useCallback((content) => {
-    setDynamicContent(content);
-  }, []);
-
-
-  // Get posts to display based on selection
-  const getPostsToDisplay = () => {
-    // Always filter for active posts
-    const activePosts = historicalPosts.filter(post => post.isActive !== false);
-    
-    if (selectedTag) {
-      return activePosts.filter(post => 
-        post.category === selectedTag || 
-        post.tags?.includes(selectedTag)
-      );
+  const loadPosts = async () => {
+    try {
+      const [featured, historical] = await Promise.all([
+        getFeaturedPostsFromFirestore(),
+        getHistoricalPostsFromFirestore()
+      ]);
+      
+      setFeaturedPosts(featured);
+      setHistoricalPosts(historical);
+    } catch (error) {
+      console.error('Error loading posts:', error);
+    } finally {
+      setLoading(false);
     }
-    return activePosts;
   };
 
-  const postsToDisplay = getPostsToDisplay();
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        bgcolor: '#000',
+        color: '#fff'
+      }}>
+        <Typography variant="h6">Loading...</Typography>
+      </Box>
+    );
+  }
 
   return (
-    <Box sx={{ flexGrow: 1, p: { xs: 2, md: 3 } }}>
-      <Grid container spacing={3}>
-        {/* Left Sidebar - Recent Posts */}
-        <Grid item xs={12} lg={4}>
-          <Box sx={{ position: 'sticky', top: 20 }}>
-            {/* Recent Posts */}
-            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 2 }}>
-                {selectedTag ? `${selectedTag} Posts` : 'Recent Posts'}
-              </Typography>
-              {postsToDisplay.length > 0 ? (
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {postsToDisplay.map((post, index) => (
-                    <Paper
-                      key={post.id || index}
-                      elevation={selectedPost?.id === post.id ? 3 : 1}
-                      onClick={() => handlePostSelect(post)}
-                      sx={{
-                        p: 2,
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease-in-out',
-                        border: selectedPost?.id === post.id ? '2px solid' : '1px solid',
-                        borderColor: selectedPost?.id === post.id ? 'primary.main' : 'divider',
-                        '&:hover': {
-                          transform: 'translateY(-2px)',
-                          boxShadow: 3,
-                        },
-                      }}
-                    >
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                        <Chip
-                          label={post.category}
-                          size="small"
-                          color="primary"
-                          variant="outlined"
-                        />
-                        <Typography variant="caption" color="text.secondary">
-                          {new Date(post.date).toLocaleDateString()}
-                        </Typography>
-                      </Box>
-                      <Typography
-                        variant="subtitle1"
-                        sx={{
-                          fontWeight: 'bold',
-                          lineHeight: 1.3,
-                          mb: 1,
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                        }}
-                      >
-                        {post.title}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{
-                          display: '-webkit-box',
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: 'vertical',
-                          overflow: 'hidden',
-                          lineHeight: 1.4,
-                        }}
-                      >
-                        {post.summary}
-                      </Typography>
-                    </Paper>
-                  ))}
-                </Box>
-              ) : (
-                <Box sx={{ textAlign: 'center', py: 2 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    {selectedTag ? `No posts found in ${selectedTag}` : 'No posts available'}
-                  </Typography>
-                  {selectedTag && (
-                    <Typography 
-                      variant="body2" 
-                      color="primary" 
-                      sx={{ cursor: 'pointer', mt: 1 }}
-                      onClick={() => handleTagClick(null)}
-                    >
-                      Show all posts
-                    </Typography>
-                  )}
-                </Box>
+    <Box sx={{ 
+      minHeight: '100vh', 
+      bgcolor: '#000', 
+      color: '#fff',
+      fontFamily: 'monospace'
+    }}>
+      {/* Header */}
+      <Box sx={{ 
+        position: 'fixed', 
+        top: 0, 
+        left: 0, 
+        right: 0, 
+        zIndex: 1000,
+        bgcolor: 'rgba(0,0,0,0.9)',
+        backdropFilter: 'blur(10px)',
+        borderBottom: '1px solid #333'
+      }}>
+        <Container maxWidth="lg">
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            py: 2
+          }}>
+            <Typography variant="h4" sx={{ 
+              fontWeight: 'bold',
+              fontFamily: 'monospace',
+              letterSpacing: '2px'
+            }}>
+              TESTYOURMODELS
+            </Typography>
+            
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 2, alignItems: 'center' }}>
+              {!isAuthenticated && (
+                <Button 
+                  sx={{ color: '#fff', textTransform: 'none' }}
+                  onClick={() => setSignInOpen(true)}
+                >
+                  Sign In
+                </Button>
               )}
-            </Paper>
+              {isAuthenticated && (
+                <Button 
+                  sx={{ color: '#fff', textTransform: 'none' }}
+                  onClick={() => navigate('/admin')}
+                >
+                  Admin
+                </Button>
+              )}
+              <IconButton 
+                onClick={toggleTheme}
+                sx={{ color: '#fff' }}
+              >
+                {isDarkMode ? <Brightness7 /> : <Brightness4 />}
+              </IconButton>
+            </Box>
 
-            {/* Tags Section */}
-            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Categories
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                <Chip 
-                  label="All" 
-                  onClick={() => handleTagClick(null)}
-                  variant={selectedTag === null ? 'filled' : 'outlined'}
-                  color={selectedTag === null ? 'primary' : 'default'}
-                  sx={{ cursor: 'pointer' }}
-                />
-                {['Video', 'Music', 'Image', 'Deep Research', 'Reasoning'].map((tag) => (
-                  <Chip 
-                    key={tag} 
-                    label={tag} 
-                    onClick={() => handleTagClick(tag)}
-                    variant={selectedTag === tag ? 'filled' : 'outlined'}
-                    color={selectedTag === tag ? 'primary' : 'default'}
-                    sx={{ cursor: 'pointer' }}
-                  />
-                ))}
-              </Box>
-            </Paper>
+            <IconButton 
+              onClick={toggleSidebar}
+              sx={{ color: '#fff', display: { xs: 'block', md: 'none' } }}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Box>
+        </Container>
+      </Box>
 
-            {/* Categories Sidebar */}
-            <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Browse by Category
+      {/* Mobile Sidebar */}
+      <Drawer
+        anchor="right"
+        open={sidebarOpen}
+        onClose={toggleSidebar}
+        sx={{
+          '& .MuiDrawer-paper': {
+            bgcolor: '#000',
+            color: '#fff',
+            width: 280,
+          },
+        }}
+      >
+        <Box sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Typography variant="h6">Menu</Typography>
+            <IconButton onClick={toggleSidebar} sx={{ color: '#fff' }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <List>
+            {!isAuthenticated && (
+              <ListItem onClick={() => { setSignInOpen(true); toggleSidebar(); }}>
+                <ListItemText primary="Sign In" />
+              </ListItem>
+            )}
+            {isAuthenticated && (
+              <ListItem onClick={() => { navigate('/admin'); toggleSidebar(); }}>
+                <ListItemText primary="Admin" />
+              </ListItem>
+            )}
+            <ListItem onClick={() => { toggleTheme(); toggleSidebar(); }}>
+              <ListItemText primary={isDarkMode ? "Light Mode" : "Dark Mode"} />
+            </ListItem>
+          </List>
+        </Box>
+      </Drawer>
+
+      {/* Main Content */}
+      <Box sx={{ pt: 10 }}>
+        <Container maxWidth="lg">
+
+          {/* Featured Posts */}
+          {featuredPosts.length > 0 && (
+            <Box sx={{ mb: 8 }}>
+              <Typography variant="h3" sx={{ 
+                fontFamily: 'monospace',
+                letterSpacing: '2px',
+                mb: 4,
+                textAlign: 'center'
+              }}>
+                FEATURED
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                <Box 
-                  onClick={() => handleTagClick(null)}
+              
+              {featuredPosts.map((featuredPost, index) => (
+                <Paper 
+                  key={featuredPost.id}
                   sx={{ 
-                    cursor: 'pointer', 
-                    p: 1, 
-                    borderRadius: 1,
-                    '&:hover': { backgroundColor: 'action.hover' },
-                    backgroundColor: selectedTag === null ? 'primary.light' : 'transparent'
+                    bgcolor: '#111',
+                    border: '1px solid #333',
+                    overflow: 'hidden',
+                    position: 'relative',
+                    mb: 4
                   }}
                 >
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      fontWeight: selectedTag === null ? 'bold' : 'normal',
-                      color: selectedTag === null ? 'primary.main' : 'text.primary'
-                    }}
-                  >
-                    All Posts
-                  </Typography>
-                </Box>
-                {[
-                  { name: 'Video', count: 0 },
-                  { name: 'Music', count: 0 },
-                  { name: 'Image', count: 0 },
-                  { name: 'Deep Research', count: 0 },
-                  { name: 'Reasoning', count: 0 }
-                ].map((category) => (
-                  <Box 
-                    key={category.name} 
-                    onClick={() => handleTagClick(category.name)}
-                    sx={{ 
-                      cursor: 'pointer', 
-                      p: 1, 
-                      borderRadius: 1,
-                      '&:hover': { backgroundColor: 'action.hover' },
-                      backgroundColor: selectedTag === category.name ? 'primary.light' : 'transparent'
-                    }}
-                  >
-                    <Typography 
-                      variant="body2" 
-                      sx={{ 
-                        fontWeight: selectedTag === category.name ? 'bold' : 'normal',
-                        color: selectedTag === category.name ? 'primary.main' : 'text.primary'
-                      }}
-                    >
-                      {category.name}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            </Paper>
+                  <Grid container>
+                    <Grid item xs={12} md={6}>
+                      <Box sx={{ p: 4 }}>
+                        <Chip 
+                          label={featuredPost.category} 
+                          sx={{ 
+                            bgcolor: '#333',
+                            color: '#fff',
+                            mb: 2,
+                            fontFamily: 'monospace'
+                          }}
+                        />
+                        <Typography variant="h4" sx={{ 
+                          fontFamily: 'monospace',
+                          letterSpacing: '1px',
+                          mb: 2,
+                          lineHeight: 1.2
+                        }}>
+                          {featuredPost.title}
+                        </Typography>
+                        <Typography variant="body1" sx={{ 
+                          color: '#888',
+                          mb: 3,
+                          lineHeight: 1.6
+                        }}>
+                          {featuredPost.summary}
+                        </Typography>
+                        <Button 
+                          variant="contained"
+                          onClick={() => navigate(`/post/${featuredPost.id}`)}
+                          sx={{ 
+                            bgcolor: '#fff',
+                            color: '#000',
+                            fontFamily: 'monospace',
+                            letterSpacing: '1px',
+                            '&:hover': {
+                              bgcolor: '#ccc'
+                            }
+                          }}
+                        >
+                          READ MORE
+                        </Button>
+                      </Box>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <Box sx={{ height: 400, bgcolor: '#222' }}>
+                        <TabbedMediaDisplay 
+                          mediaVersions={featuredPost.mediaVersions}
+                          title={featuredPost.title}
+                          fallbackImage={featuredPost.image}
+                        />
+                      </Box>
+                    </Grid>
+                  </Grid>
+                </Paper>
+              ))}
+            </Box>
+          )}
 
-            {/* Popular Tags */}
-            <Paper elevation={2} sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                Popular Tags
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {['Video', 'Music', 'Image', 'Deep Research', 'Reasoning'].map((tag) => (
-                  <Chip 
-                    key={tag} 
-                    label={tag} 
-                    size="small" 
-                    onClick={() => handleTagClick(tag)}
-                    variant={selectedTag === tag ? 'filled' : 'outlined'}
-                    color={selectedTag === tag ? 'primary' : 'default'}
-                    sx={{ cursor: 'pointer' }}
-                  />
-                ))}
-              </Box>
-            </Paper>
+          {/* Recent Posts Grid */}
+          <Box sx={{ mb: 8 }}>
+            <Typography variant="h3" sx={{ 
+              fontFamily: 'monospace',
+              letterSpacing: '2px',
+              mb: 4,
+              textAlign: 'center'
+            }}>
+              RECENT
+            </Typography>
+            
+            <Grid container spacing={3}>
+              {historicalPosts.slice(0, 6).map((post, index) => (
+                <Grid item xs={12} sm={6} md={4} key={post.id}>
+                  <Card sx={{ 
+                    bgcolor: '#111',
+                    border: '1px solid #333',
+                    height: '100%',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      borderColor: '#fff',
+                      transform: 'translateY(-4px)'
+                    }
+                  }}
+                  onClick={() => navigate(`/post/${post.id}`)}
+                  >
+                    <Box sx={{ height: 200, bgcolor: '#222' }}>
+                      <TabbedMediaDisplay 
+                        mediaVersions={post.mediaVersions}
+                        title={post.title}
+                        fallbackImage={post.image}
+                      />
+                    </Box>
+                    <CardContent sx={{ p: 3 }}>
+                      <Chip 
+                        label={post.category} 
+                        size="small"
+                        sx={{ 
+                          bgcolor: '#333',
+                          color: '#fff',
+                          mb: 2,
+                          fontFamily: 'monospace'
+                        }}
+                      />
+                      <Typography variant="h6" sx={{ 
+                        fontFamily: 'monospace',
+                        letterSpacing: '1px',
+                        mb: 1,
+                        lineHeight: 1.3
+                      }}>
+                        {post.title}
+                      </Typography>
+                      <Typography variant="body2" sx={{ 
+                        color: '#888',
+                        lineHeight: 1.5
+                      }}>
+                        {post.summary}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
           </Box>
-        </Grid>
 
-        {/* Main Content */}
-        <Grid item xs={12} lg={8}>
-          {/* Featured Post Section */}
-          {selectedPost && (
-            <Paper 
-              elevation={3} 
-              sx={{ 
-                mb: 3, 
-                overflow: 'hidden',
-                borderRadius: 2,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white'
-              }}
-            >
-              <Box sx={{ p: 3 }}>
-                <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-                  {selectedPost.title}
-                </Typography>
-                <Typography variant="h6" sx={{ mb: 2, opacity: 0.9 }}>
-                  {selectedPost.summary}
-                </Typography>
-                
-                {/* Media Display */}
-                <Box sx={{ mb: 3 }}>
-                  <TabbedMediaDisplay
-                    mediaVersions={selectedPost.mediaVersions}
-                    title={selectedPost.title}
-                    onContentChange={handleContentChange}
-                  />
-                </Box>
+          {/* Footer */}
+          <Box sx={{ 
+            textAlign: 'center', 
+            py: 6,
+            borderTop: '1px solid #333',
+            mt: 8
+          }}>
+            <Box sx={{ mb: 3 }}>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderColor: '#fff',
+                  color: '#fff',
+                  fontFamily: 'monospace',
+                  letterSpacing: '1px',
+                  px: 3,
+                  py: 1,
+                  mr: 2,
+                  '&:hover': {
+                    borderColor: '#fff',
+                    bgcolor: 'rgba(255,255,255,0.1)'
+                  }
+                }}
+                onClick={() => navigate('/about')}
+              >
+                ABOUT
+              </Button>
+              <Button
+                variant="outlined"
+                sx={{
+                  borderColor: '#fff',
+                  color: '#fff',
+                  fontFamily: 'monospace',
+                  letterSpacing: '1px',
+                  px: 3,
+                  py: 1,
+                  mr: 2,
+                  '&:hover': {
+                    borderColor: '#fff',
+                    bgcolor: 'rgba(255,255,255,0.1)'
+                  }
+                }}
+                onClick={() => navigate('/contact')}
+              >
+                CONTACT
+              </Button>
+              {isAuthenticated && (
+                <Button
+                  variant="outlined"
+                  sx={{
+                    borderColor: '#fff',
+                    color: '#fff',
+                    fontFamily: 'monospace',
+                    letterSpacing: '1px',
+                    px: 3,
+                    py: 1,
+                    '&:hover': {
+                      borderColor: '#fff',
+                      bgcolor: 'rgba(255,255,255,0.1)'
+                    }
+                  }}
+                  onClick={() => navigate('/admin')}
+                >
+                  ADMIN
+                </Button>
+              )}
+            </Box>
+            <Typography variant="body2" sx={{ 
+              color: '#888',
+              fontFamily: 'monospace',
+              letterSpacing: '1px'
+            }}>
+              © TESTYOURMODELS 2025 All Rights Reserved
+            </Typography>
+          </Box>
+        </Container>
+      </Box>
 
-                {/* Dynamic Content */}
-                {dynamicContent && (
-                  <Box sx={{ 
-                    mt: 2, 
-                    p: 2, 
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)', 
-                    borderRadius: 1,
-                    backdropFilter: 'blur(10px)'
-                  }}>
-                    <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
-                      {dynamicContent}
-                    </Typography>
-                  </Box>
-                )}
-
-                {/* Post Meta */}
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
-                  <Chip 
-                    label={selectedPost.category} 
-                    size="small" 
-                    sx={{ 
-                      backgroundColor: 'rgba(255, 255, 255, 0.2)', 
-                      color: 'white',
-                      '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.3)' }
-                    }} 
-                  />
-                  <Chip 
-                    label={new Date(selectedPost.date).toLocaleDateString()} 
-                    size="small" 
-                    sx={{ 
-                      backgroundColor: 'rgba(255, 255, 255, 0.2)', 
-                      color: 'white',
-                      '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.3)' }
-                    }} 
-                  />
-                </Box>
-              </Box>
-            </Paper>
-          )}
-
-          {/* No Posts Message */}
-          {!selectedPost && historicalPosts.length === 0 && (
-            <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
-              <Typography variant="h5" color="text.secondary" gutterBottom>
-                Welcome to Your Blog
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                No posts yet. Sign in and create your first post in the Admin panel!
-              </Typography>
-            </Paper>
-          )}
-
-        </Grid>
-      </Grid>
+      {/* Sign In Dialog */}
+      <SignIn open={signInOpen} onClose={() => setSignInOpen(false)} />
     </Box>
   );
 };

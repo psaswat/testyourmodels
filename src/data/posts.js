@@ -1,4 +1,4 @@
-import { getPosts, getFeaturedPost, getHistoricalPosts, searchPosts, createPost, updatePost as updatePostFirestore, deletePost as deletePostFirestore } from '../services/firestoreService';
+import { getPosts, getFeaturedPost, getFeaturedPosts, getHistoricalPosts, searchPosts, createPost, updatePost as updatePostFirestore, deletePost as deletePostFirestore } from '../services/firestoreService';
 
 // Clean blog posts data (fallback for development)
 let staticPosts = [
@@ -39,6 +39,30 @@ export const getFeaturedPostFromFirestore = async () => {
       return featuredPosts[0];
     }
     return staticPosts.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+  }
+};
+
+// Function to get multiple featured posts (from Firestore)
+export const getFeaturedPostsFromFirestore = async () => {
+  try {
+    const result = await getFeaturedPosts();
+    console.log('Featured posts result:', result);
+    if (result.success && result.data.length > 0) {
+      console.log('Found featured posts:', result.data);
+      return result.data;
+    } else {
+      console.warn('No featured posts in Firestore, using static data');
+      const featuredPosts = staticPosts.filter(post => post.isFeatured);
+      if (featuredPosts.length > 0) {
+        return featuredPosts;
+      } else {
+        console.log('Using welcome post as fallback');
+        return [createWelcomePost()];
+      }
+    }
+  } catch (error) {
+    console.error('Error getting featured posts from Firestore:', error);
+    return [createWelcomePost()];
   }
 };
 

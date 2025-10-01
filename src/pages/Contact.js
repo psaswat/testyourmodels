@@ -58,8 +58,6 @@ const Contact = () => {
         });
       } else {
         console.error('Contact form error:', result);
-        
-        // Check if it's a permission error
         if (result.code === 'permission-denied') {
           setSnackbar({
             open: true,
@@ -94,9 +92,11 @@ const Contact = () => {
     <Box sx={{ 
       width: '100vw', 
       minHeight: '100vh',
-      backgroundColor: theme.palette.background.default,
+      backgroundColor: '#000',
+      color: '#fff',
       py: { xs: 2, sm: 3, md: 6 },
-      px: { xs: 2, sm: 3, md: 4 }
+      px: { xs: 2, sm: 3, md: 4 },
+      fontFamily: 'monospace'
     }}>
       <Box sx={{ maxWidth: 'lg', mx: 'auto' }}>
         <Box sx={{ textAlign: 'center', mb: { xs: 4, sm: 6 } }}>
@@ -105,22 +105,24 @@ const Contact = () => {
             component="h1"
             gutterBottom
             sx={{
-              fontFamily: '"Playfair Display", serif',
-              fontWeight: 600,
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '2px',
               mb: 2,
-              fontSize: { xs: '2rem', sm: '2.5rem', md: '3.75rem' }
+              fontSize: { xs: '2rem', sm: '2.5rem', md: '3.5rem' }
             }}
           >
             Get in Touch
           </Typography>
           <Typography
             variant="h5"
-            color="text.secondary"
             sx={{
-              maxWidth: 600,
+              maxWidth: 700,
               mx: 'auto',
               lineHeight: 1.6,
-              fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' }
+              fontSize: { xs: '0.95rem', sm: '1.05rem', md: '1.15rem' },
+              color: '#888',
+              fontFamily: 'monospace'
             }}
           >
             Have a question or want to collaborate? We'd love to hear from you.
@@ -133,8 +135,9 @@ const Contact = () => {
               elevation={0}
               sx={{
                 p: { xs: 2, sm: 3, md: 4 },
-                border: `1px solid ${theme.palette.divider}`,
+                border: '1px solid #333',
                 borderRadius: 2,
+                bgcolor: '#111'
               }}
             >
               <Typography
@@ -142,10 +145,10 @@ const Contact = () => {
                 component="h2"
                 gutterBottom
                 sx={{
-                  fontFamily: '"Playfair Display", serif',
-                  fontWeight: 600,
+                  fontFamily: 'monospace',
+                  fontWeight: 700,
                   mb: 3,
-                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' }
+                  fontSize: { xs: '1.3rem', sm: '1.6rem', md: '1.8rem' }
                 }}
               >
                 Send us a Message
@@ -246,9 +249,10 @@ const Contact = () => {
               elevation={0}
               sx={{
                 p: { xs: 2, sm: 3, md: 4 },
-                border: `1px solid ${theme.palette.divider}`,
+                border: '1px solid #333',
                 borderRadius: 2,
                 height: 'fit-content',
+                bgcolor: '#111'
               }}
             >
               <Typography
@@ -256,10 +260,10 @@ const Contact = () => {
                 component="h3"
                 gutterBottom
                 sx={{
-                  fontFamily: '"Playfair Display", serif',
-                  fontWeight: 600,
+                  fontFamily: 'monospace',
+                  fontWeight: 700,
                   mb: 3,
-                  fontSize: { xs: '1.25rem', sm: '1.5rem' }
+                  fontSize: { xs: '1.1rem', sm: '1.3rem' }
                 }}
               >
                 Contact Information
@@ -269,10 +273,10 @@ const Contact = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Email sx={{ color: theme.palette.primary.main, fontSize: { xs: '1rem', sm: '1.2rem' } }} />
                   <Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: '#888', fontFamily: 'monospace' }}>
                       Email
                     </Typography>
-                    <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                    <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, fontFamily: 'monospace' }}>
                       hello@modernblog.com
                     </Typography>
                   </Box>
@@ -281,10 +285,10 @@ const Contact = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Phone sx={{ color: theme.palette.primary.main, fontSize: { xs: '1rem', sm: '1.2rem' } }} />
                   <Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: '#888', fontFamily: 'monospace' }}>
                       Phone
                     </Typography>
-                    <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                    <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, fontFamily: 'monospace' }}>
                       +1 (555) 123-4567
                     </Typography>
                   </Box>
@@ -293,10 +297,10 @@ const Contact = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <LocationOn sx={{ color: theme.palette.primary.main, fontSize: { xs: '1rem', sm: '1.2rem' } }} />
                   <Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: '#888', fontFamily: 'monospace' }}>
                       Address
                     </Typography>
-                    <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                    <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, fontFamily: 'monospace' }}>
                       123 Blog Street<br />
                       San Francisco, CA 94102
                     </Typography>
@@ -304,25 +308,26 @@ const Contact = () => {
                 </Box>
               </Box>
 
-              <Box sx={{ mt: 4, pt: 3, borderTop: `1px solid ${theme.palette.divider}` }}>
+              <Box sx={{ mt: 4, pt: 3, borderTop: '1px solid #333' }}>
                 <Typography
                   variant="h6"
                   component="h4"
                   gutterBottom
                   sx={{
-                    fontFamily: '"Playfair Display", serif',
-                    fontWeight: 600,
-                    fontSize: { xs: '1rem', sm: '1.25rem' }
+                    fontFamily: 'monospace',
+                    fontWeight: 700,
+                    fontSize: { xs: '1rem', sm: '1.15rem' }
                   }}
                 >
                   Office Hours
                 </Typography>
                 <Typography 
                   variant="body2" 
-                  color="text.secondary" 
                   sx={{ 
                     lineHeight: 1.6,
-                    fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                    fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                    color: '#aaa',
+                    fontFamily: 'monospace'
                   }}
                 >
                   Monday - Friday: 9:00 AM - 6:00 PM<br />

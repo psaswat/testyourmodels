@@ -16,9 +16,11 @@ const About = () => {
     <Box sx={{ 
       width: '100vw', 
       minHeight: '100vh',
-      backgroundColor: theme.palette.background.default,
+      backgroundColor: '#000',
+      color: '#fff',
       py: { xs: 2, sm: 3, md: 6 },
-      px: { xs: 2, sm: 3, md: 4 }
+      px: { xs: 2, sm: 3, md: 4 },
+      fontFamily: 'monospace'
     }}>
       <Box sx={{ maxWidth: 'lg', mx: 'auto' }}>
         <Box sx={{ textAlign: 'center', mb: { xs: 4, sm: 6 } }}>
@@ -27,22 +29,24 @@ const About = () => {
             component="h1"
             gutterBottom
             sx={{
-              fontFamily: '"Playfair Display", serif',
-              fontWeight: 600,
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '2px',
               mb: 2,
-              fontSize: { xs: '2rem', sm: '2.5rem', md: '3.75rem' }
+              fontSize: { xs: '2rem', sm: '2.5rem', md: '3.5rem' }
             }}
           >
             About Our Blog
           </Typography>
           <Typography
             variant="h5"
-            color="text.secondary"
             sx={{
-              maxWidth: 600,
+              maxWidth: 700,
               mx: 'auto',
               lineHeight: 1.6,
-              fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' }
+              fontSize: { xs: '0.95rem', sm: '1.05rem', md: '1.15rem' },
+              color: '#888',
+              fontFamily: 'monospace'
             }}
           >
             Sharing insights, stories, and perspectives on technology, lifestyle, and everything in between.
@@ -55,8 +59,9 @@ const About = () => {
               elevation={0}
               sx={{
                 p: { xs: 2, sm: 3, md: 4 },
-                border: `1px solid ${theme.palette.divider}`,
+                border: '1px solid #333',
                 borderRadius: 2,
+                bgcolor: '#111'
               }}
             >
               <Typography
@@ -64,10 +69,10 @@ const About = () => {
                 component="h2"
                 gutterBottom
                 sx={{
-                  fontFamily: '"Playfair Display", serif',
-                  fontWeight: 600,
+                  fontFamily: 'monospace',
+                  fontWeight: 700,
                   mb: 3,
-                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' }
+                  fontSize: { xs: '1.3rem', sm: '1.6rem', md: '1.8rem' }
                 }}
               >
                 Our Mission
@@ -78,7 +83,9 @@ const About = () => {
                 sx={{
                   lineHeight: 1.8,
                   mb: 3,
-                  fontSize: { xs: '0.875rem', sm: '1rem' }
+                  fontSize: { xs: '0.9rem', sm: '1rem' },
+                  color: '#ccc',
+                  fontFamily: 'monospace'
                 }}
               >
                 We believe in the power of thoughtful content to inspire, educate, and connect people from all walks of life. 
@@ -90,7 +97,9 @@ const About = () => {
                 sx={{
                   lineHeight: 1.8,
                   mb: 3,
-                  fontSize: { xs: '0.875rem', sm: '1rem' }
+                  fontSize: { xs: '0.9rem', sm: '1rem' },
+                  color: '#ccc',
+                  fontFamily: 'monospace'
                 }}
               >
                 From cutting-edge technology trends to sustainable living practices, from productivity insights to culinary adventures, 
@@ -101,7 +110,9 @@ const About = () => {
                 variant="body1"
                 sx={{
                   lineHeight: 1.8,
-                  fontSize: { xs: '0.875rem', sm: '1rem' }
+                  fontSize: { xs: '0.9rem', sm: '1rem' },
+                  color: '#ccc',
+                  fontFamily: 'monospace'
                 }}
               >
                 Our commitment is to deliver high-quality, well-researched content that not only informs but also encourages 
@@ -115,10 +126,11 @@ const About = () => {
               elevation={0}
               sx={{
                 p: { xs: 2, sm: 3, md: 4 },
-                border: `1px solid ${theme.palette.divider}`,
+                border: '1px solid #333',
                 borderRadius: 2,
                 textAlign: 'center',
                 height: 'fit-content',
+                bgcolor: '#111'
               }}
             >
               <Avatar
@@ -138,9 +150,9 @@ const About = () => {
                 component="h3"
                 gutterBottom
                 sx={{
-                  fontFamily: '"Playfair Display", serif',
-                  fontWeight: 600,
-                  fontSize: { xs: '1.25rem', sm: '1.5rem' }
+                  fontFamily: 'monospace',
+                  fontWeight: 700,
+                  fontSize: { xs: '1.1rem', sm: '1.3rem' }
                 }}
               >
                 Our Team
@@ -148,11 +160,12 @@ const About = () => {
 
               <Typography
                 variant="body2"
-                color="text.secondary"
                 sx={{
                   lineHeight: 1.6,
                   mb: 3,
-                  fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                  fontSize: { xs: '0.8rem', sm: '0.9rem' },
+                  color: '#aaa',
+                  fontFamily: 'monospace'
                 }}
               >
                 We are a passionate team of writers, designers, and creators dedicated to producing meaningful content 
@@ -163,10 +176,10 @@ const About = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <Email sx={{ color: theme.palette.primary.main, fontSize: { xs: '1rem', sm: '1.2rem' } }} />
                   <Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: '#888', fontFamily: 'monospace' }}>
                       Email
                     </Typography>
-                    <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                    <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, fontFamily: 'monospace' }}>
                       hello@modernblog.com
                     </Typography>
                   </Box>
@@ -174,10 +187,10 @@ const About = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <LocationOn sx={{ color: theme.palette.primary.main, fontSize: { xs: '1rem', sm: '1.2rem' } }} />
                   <Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                    <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: '#888', fontFamily: 'monospace' }}>
                       Address
                     </Typography>
-                    <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                    <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, fontFamily: 'monospace' }}>
                       San Francisco, CA
                     </Typography>
                   </Box>
@@ -193,11 +206,11 @@ const About = () => {
             component="h2"
             gutterBottom
             sx={{
-              fontFamily: '"Playfair Display", serif',
-              fontWeight: 600,
+              fontFamily: 'monospace',
+              fontWeight: 700,
               textAlign: 'center',
               mb: 4,
-              fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' }
+              fontSize: { xs: '1.3rem', sm: '1.6rem', md: '1.8rem' }
             }}
           >
             What We Cover
@@ -232,9 +245,10 @@ const About = () => {
                   sx={{
                     p: { xs: 2, sm: 3 },
                     height: '100%',
-                    border: `1px solid ${theme.palette.divider}`,
+                    border: '1px solid #333',
                     borderRadius: 2,
                     transition: 'transform 0.2s ease-in-out',
+                    bgcolor: '#111',
                     '&:hover': {
                       transform: 'translateY(-4px)',
                     },
@@ -245,17 +259,16 @@ const About = () => {
                     component="h3"
                     gutterBottom
                     sx={{
-                      fontFamily: '"Playfair Display", serif',
-                      fontWeight: 600,
-                      fontSize: { xs: '1rem', sm: '1.25rem' }
+                      fontFamily: 'monospace',
+                      fontWeight: 700,
+                      fontSize: { xs: '1rem', sm: '1.15rem' }
                     }}
                   >
                     {category.title}
                   </Typography>
                   <Typography
                     variant="body2"
-                    color="text.secondary"
-                    sx={{ lineHeight: 1.6, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+                    sx={{ lineHeight: 1.6, fontSize: { xs: '0.8rem', sm: '0.9rem' }, color: '#aaa', fontFamily: 'monospace' }}
                   >
                     {category.description}
                   </Typography>

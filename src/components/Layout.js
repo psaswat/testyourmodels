@@ -43,9 +43,19 @@ const Layout = ({ children }) => {
   ];
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        Blog
+    <Box onClick={handleDrawerToggle} sx={{ 
+      textAlign: 'center',
+      bgcolor: '#000',
+      color: '#fff',
+      height: '100%'
+    }}>
+      <Typography variant="h6" sx={{ 
+        my: 2,
+        fontFamily: 'monospace',
+        fontWeight: 'bold',
+        letterSpacing: '2px'
+      }}>
+        TYM
       </Typography>
       <List>
         {navItems.map((item) => (
@@ -53,8 +63,9 @@ const Layout = ({ children }) => {
             <ListItemText 
               primary={item.text} 
               sx={{ 
-                color: location.pathname === item.path ? muiTheme.palette.primary.main : 'inherit',
+                color: '#fff',
                 fontWeight: location.pathname === item.path ? 600 : 400,
+                fontFamily: 'monospace',
               }}
             />
           </ListItem>
@@ -63,14 +74,25 @@ const Layout = ({ children }) => {
     </Box>
   );
 
+  const isNullSocietyHome = location.pathname === '/';
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh',
+      bgcolor: '#000',
+      color: '#fff',
+      fontFamily: 'monospace'
+    }}>
+      {!isNullSocietyHome && (
       <AppBar 
         position="sticky" 
         elevation={0}
         sx={{ 
-          backgroundColor: muiTheme.palette.background.paper,
-          borderBottom: `1px solid ${muiTheme.palette.divider}`,
+          backgroundColor: 'rgba(0,0,0,0.9)',
+          backdropFilter: 'blur(10px)',
+          borderBottom: '1px solid #333',
           zIndex: 1200,
         }}
       >
@@ -93,15 +115,16 @@ const Layout = ({ children }) => {
             to="/"
             sx={{
               textDecoration: 'none',
-              color: 'inherit',
-              fontFamily: '"Playfair Display", serif',
-              fontWeight: 600,
+              color: '#fff',
+              fontFamily: 'monospace',
+              fontWeight: 'bold',
+              letterSpacing: '2px',
               fontSize: { xs: '1.25rem', sm: '1.5rem' },
               mr: { xs: 2, sm: 4 },
               flexShrink: 0,
             }}
           >
-            Blog
+            TYM
           </Typography>
 
           {/* Navigation Links - Always visible on desktop */}
@@ -113,18 +136,17 @@ const Layout = ({ children }) => {
                   component={Link}
                   to={item.path}
                   sx={{
-                    color: location.pathname === item.path 
-                      ? muiTheme.palette.primary.main 
-                      : muiTheme.palette.text.primary,
+                    color: '#fff',
                     fontWeight: location.pathname === item.path ? 600 : 400,
                     textTransform: 'none',
                     fontSize: '0.875rem',
                     px: 1.5,
                     py: 0.5,
                     minWidth: 'auto',
+                    fontFamily: 'monospace',
                     '&:hover': {
-                      backgroundColor: 'transparent',
-                      color: muiTheme.palette.primary.main,
+                      backgroundColor: 'rgba(255,255,255,0.1)',
+                      color: '#fff',
                     },
                   }}
                 >
@@ -187,7 +209,9 @@ const Layout = ({ children }) => {
           </Box>
         )}
       </AppBar>
+      )}
 
+      {!isNullSocietyHome && (
       <Drawer
         variant="temporary"
         open={mobileOpen}
@@ -200,33 +224,42 @@ const Layout = ({ children }) => {
           '& .MuiDrawer-paper': { 
             boxSizing: 'border-box', 
             width: 240,
-            backgroundColor: muiTheme.palette.background.paper,
+            backgroundColor: '#000',
+            color: '#fff',
           },
         }}
       >
         {drawer}
       </Drawer>
+      )}
 
       <Box component="main" sx={{ flexGrow: 1 }}>
         {children}
       </Box>
 
+      {!isNullSocietyHome && (
       <Box
         component="footer"
         sx={{
           py: 3,
           px: 2,
           mt: 'auto',
-          backgroundColor: muiTheme.palette.background.paper,
-          borderTop: `1px solid ${muiTheme.palette.divider}`,
+          backgroundColor: '#000',
+          borderTop: '1px solid #333',
         }}
       >
         <Container maxWidth="lg">
-          <Typography variant="body2" color="text.secondary" align="center">
-            © 2024 Blog. All rights reserved.
+          <Typography variant="body2" sx={{ 
+            color: '#888',
+            align: 'center',
+            fontFamily: 'monospace',
+            letterSpacing: '1px'
+          }}>
+            © 2024 TYM. All rights reserved.
           </Typography>
         </Container>
       </Box>
+      )}
 
       {/* Sign In Dialog */}
       <SignIn 

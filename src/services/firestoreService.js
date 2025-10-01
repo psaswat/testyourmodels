@@ -8,6 +8,7 @@ import {
   query, 
   orderBy, 
   limit,
+  where,
   onSnapshot,
   serverTimestamp 
 } from 'firebase/firestore';
@@ -97,21 +98,59 @@ export const deletePost = async (postId) => {
   }
 };
 
-// Get featured post (most recent)
-export const getFeaturedPost = async () => {
+// Get featured posts (up to 3)
+export const getFeaturedPosts = async () => {
   try {
+    // First try the compound query
     const q = query(
       collection(db, POSTS_COLLECTION),
+      where('isActive', '==', true),
+      where('isFeatured', '==', true),
       orderBy('createdAt', 'desc'),
-      limit(1)
+      limit(3)
     );
     const querySnapshot = await getDocs(q);
-    
-    if (!querySnapshot.empty) {
-      const doc = querySnapshot.docs[0];
-      return { success: true, data: { id: doc.id, ...doc.data() } };
+    const posts = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+    console.log('Firestore featured posts query result:', posts);
+    return { success: true, data: posts };
+  } catch (error) {
+    console.error('Compound query failed, trying simple query:', error);
+    try {
+      // Fallback: get all posts and filter in memory
+      const allPostsQuery = query(
+        collection(db, POSTS_COLLECTION),
+        orderBy('createdAt', 'desc')
+      );
+      const allPostsSnapshot = await getDocs(allPostsQuery);
+      const allPosts = allPostsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      const featuredPosts = allPosts
+        .filter(post => post.isActive !== false && post.isFeatured === true)
+        .slice(0, 3);
+      
+      console.log('Fallback featured posts result:', featuredPosts);
+      return { success: true, data: featuredPosts };
+    } catch (fallbackError) {
+      console.error('Fallback query also failed:', fallbackError);
+      return { success: false, error: fallbackError.message };
+    }
+  }
+};
+
+// Get featured post (legacy - for backward compatibility)
+export const getFeaturedPost = async () => {
+  try {
+    const result = await getFeaturedPosts();
+    if (result.success && result.data.length > 0) {
+      return { success: true, data: result.data[0] };
     } else {
-      return { success: false, error: 'No posts found' };
+      return { success: false, error: 'No featured posts found' };
     }
   } catch (error) {
     console.error('Error getting featured post: ', error);
