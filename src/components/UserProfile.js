@@ -33,8 +33,7 @@ const UserProfile = () => {
 
   const handleProfile = () => {
     handleClose();
-    // Navigate to profile page (you can create this later)
-    console.log('Navigate to profile');
+    navigate('/profile');
   };
 
   const handleAdmin = () => {

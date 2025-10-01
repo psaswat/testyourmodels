@@ -10,6 +10,7 @@ import Contact from './pages/Contact';
 import SearchResults from './pages/SearchResults';
 import Admin from './pages/Admin';
 import PostDetail from './pages/PostDetail';
+import Profile from './pages/Profile';
 
 function App() {
   const { theme } = useTheme();
@@ -25,6 +26,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/search" element={<SearchResults />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/post/:id" element={<PostDetail />} />
           </Routes>
         </Layout>

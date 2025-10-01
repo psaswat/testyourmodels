@@ -310,7 +310,7 @@ const Contact = () => {
                 </Box>
               </Box>
 
-              <Box sx={{ mt: 4, pt: 3, borderTop: '1px solid #333' }}>
+              <Box sx={{ mt: 4, pt: 3, borderTop: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0' }}>
                 <Typography
                   variant="h6"
                   component="h4"

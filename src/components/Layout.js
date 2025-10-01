@@ -53,7 +53,8 @@ const Layout = ({ children }) => {
         my: 2,
         fontFamily: 'monospace',
         fontWeight: 'bold',
-        letterSpacing: '2px'
+        letterSpacing: '2px',
+        color: isDarkMode ? '#fff' : '#000'
       }}>
         TYM
       </Typography>
@@ -63,7 +64,7 @@ const Layout = ({ children }) => {
             <ListItemText 
               primary={item.text} 
               sx={{ 
-                color: '#fff',
+                color: isDarkMode ? '#fff' : '#000',
                 fontWeight: location.pathname === item.path ? 600 : 400,
                 fontFamily: 'monospace',
               }}
@@ -115,7 +116,7 @@ const Layout = ({ children }) => {
             to="/"
             sx={{
               textDecoration: 'none',
-              color: '#fff',
+              color: isDarkMode ? '#fff' : '#000',
               fontFamily: 'monospace',
               fontWeight: 'bold',
               letterSpacing: '2px',
@@ -136,7 +137,7 @@ const Layout = ({ children }) => {
                   component={Link}
                   to={item.path}
                   sx={{
-                    color: '#fff',
+                    color: isDarkMode ? '#fff' : '#000',
                     fontWeight: location.pathname === item.path ? 600 : 400,
                     textTransform: 'none',
                     fontSize: '0.875rem',
@@ -145,8 +146,8 @@ const Layout = ({ children }) => {
                     minWidth: 'auto',
                     fontFamily: 'monospace',
                     '&:hover': {
-                      backgroundColor: 'rgba(255,255,255,0.1)',
-                      color: '#fff',
+                      backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)',
+                      color: isDarkMode ? '#fff' : '#000',
                     },
                   }}
                 >
@@ -224,8 +225,8 @@ const Layout = ({ children }) => {
           '& .MuiDrawer-paper': { 
             boxSizing: 'border-box', 
             width: 240,
-            backgroundColor: '#000',
-            color: '#fff',
+            backgroundColor: isDarkMode ? '#000' : '#fff',
+            color: isDarkMode ? '#fff' : '#000',
           },
         }}
       >

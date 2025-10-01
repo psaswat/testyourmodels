@@ -20,11 +20,13 @@ import {
 } from '@mui/icons-material';
 import TabbedMediaDisplay from '../components/TabbedMediaDisplay';
 import { getFeaturedPostsFromFirestore, getHistoricalPostsFromFirestore } from '../data/posts';
+import { useTheme as useThemeContext } from '../contexts/ThemeContext';
 
 const PostDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const theme = useTheme();
+  const { isDarkMode } = useThemeContext();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bookmarked, setBookmarked] = useState(false);
@@ -94,7 +96,7 @@ const PostDetail = () => {
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center',
-        bgcolor: theme.palette.mode === 'dark' ? '#000' : '#f5f5f5'
+        bgcolor: isDarkMode ? '#000' : '#f5f5f5'
       }}>
         <Typography variant="h6">Loading...</Typography>
       </Box>
@@ -108,7 +110,7 @@ const PostDetail = () => {
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center',
-        bgcolor: theme.palette.mode === 'dark' ? '#000' : '#f5f5f5'
+        bgcolor: isDarkMode ? '#000' : '#f5f5f5'
       }}>
         <Typography variant="h6">Post not found</Typography>
       </Box>
@@ -118,18 +120,18 @@ const PostDetail = () => {
   return (
     <Box sx={{ 
       minHeight: '100vh',
-      bgcolor: theme.palette.mode === 'dark' ? '#000' : '#f5f5f5',
-      color: theme.palette.mode === 'dark' ? '#fff' : '#000'
+      bgcolor: isDarkMode ? '#000' : '#f5f5f5',
+      color: isDarkMode ? '#fff' : '#000'
     }}>
       <Container maxWidth="lg" sx={{ py: 4 }}>
         {/* Breadcrumbs */}
-        <Breadcrumbs sx={{ mb: 3, color: theme.palette.mode === 'dark' ? '#888' : '#666' }}>
+        <Breadcrumbs sx={{ mb: 3, color: isDarkMode ? '#888' : '#666' }}>
           <Link 
             component="button" 
             variant="body2" 
             onClick={() => navigate('/')}
             sx={{ 
-              color: theme.palette.mode === 'dark' ? '#888' : '#666',
+              color: isDarkMode ? '#888' : '#666',
               textDecoration: 'none',
               '&:hover': { textDecoration: 'underline' }
             }}
@@ -150,9 +152,9 @@ const PostDetail = () => {
           onClick={() => navigate('/')}
           sx={{ 
             mb: 3,
-            color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+            color: isDarkMode ? '#fff' : '#000',
             '&:hover': {
-              backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)'
+              backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)'
             }
           }}
         >
@@ -162,8 +164,8 @@ const PostDetail = () => {
         {/* Post Content */}
         <Paper sx={{ 
           p: { xs: 3, md: 6 },
-          bgcolor: theme.palette.mode === 'dark' ? '#111' : '#fff',
-          border: theme.palette.mode === 'dark' ? '1px solid #333' : '1px solid #e0e0e0',
+          bgcolor: isDarkMode ? '#111' : '#fff',
+          border: isDarkMode ? '1px solid #333' : '1px solid #e0e0e0',
           borderRadius: 2
         }}>
           {/* Post Header */}
@@ -172,9 +174,9 @@ const PostDetail = () => {
               <Chip 
                 label={post.category} 
                 sx={{ 
-                  bgcolor: theme.palette.mode === 'dark' ? '#333' : theme.palette.primary.main,
+                  bgcolor: isDarkMode ? '#333' : theme.palette.primary.main,
                   color: '#fff',
-                  fontFamily: theme.palette.mode === 'dark' ? 'monospace' : 'inherit'
+                  fontFamily: isDarkMode ? 'monospace' : 'inherit'
                 }}
               />
               <Typography variant="body2" color="text.secondary">
@@ -186,17 +188,17 @@ const PostDetail = () => {
               fontWeight: 'bold',
               mb: 2,
               lineHeight: 1.2,
-              fontFamily: theme.palette.mode === 'dark' ? 'monospace' : 'inherit',
-              letterSpacing: theme.palette.mode === 'dark' ? '1px' : 'normal'
+              fontFamily: isDarkMode ? 'monospace' : 'inherit',
+              letterSpacing: isDarkMode ? '1px' : 'normal'
             }}>
               {post.title}
             </Typography>
 
             <Typography variant="h6" sx={{ 
-              color: theme.palette.mode === 'dark' ? '#888' : '#666',
+              color: isDarkMode ? '#888' : '#666',
               mb: 3,
               lineHeight: 1.6,
-              fontFamily: theme.palette.mode === 'dark' ? 'monospace' : 'inherit'
+              fontFamily: isDarkMode ? 'monospace' : 'inherit'
             }}>
               {post.summary}
             </Typography>
@@ -208,12 +210,12 @@ const PostDetail = () => {
                 startIcon={<Share />}
                 onClick={handleShare}
                 sx={{
-                  borderColor: theme.palette.mode === 'dark' ? '#fff' : theme.palette.primary.main,
-                  color: theme.palette.mode === 'dark' ? '#fff' : theme.palette.primary.main,
-                  fontFamily: theme.palette.mode === 'dark' ? 'monospace' : 'inherit',
+                  borderColor: isDarkMode ? '#fff' : theme.palette.primary.main,
+                  color: isDarkMode ? '#fff' : theme.palette.primary.main,
+                  fontFamily: isDarkMode ? 'monospace' : 'inherit',
                   '&:hover': {
-                    borderColor: theme.palette.mode === 'dark' ? '#fff' : theme.palette.primary.main,
-                    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)'
+                    borderColor: isDarkMode ? '#fff' : theme.palette.primary.main,
+                    backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)'
                   }
                 }}
               >
@@ -224,7 +226,7 @@ const PostDetail = () => {
                 sx={{
                   color: bookmarked ? theme.palette.primary.main : theme.palette.text.secondary,
                   '&:hover': {
-                    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)'
+                    backgroundColor: isDarkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.04)'
                   }
                 }}
               >
@@ -248,10 +250,10 @@ const PostDetail = () => {
               '& p': {
                 mb: 2,
                 lineHeight: 1.6,
-                fontFamily: theme.palette.mode === 'dark' ? 'monospace' : 'inherit'
+                fontFamily: isDarkMode ? 'monospace' : 'inherit'
               },
               '& h1, & h2, & h3, & h4, & h5, & h6': {
-                fontFamily: theme.palette.mode === 'dark' ? 'monospace' : 'inherit',
+                fontFamily: isDarkMode ? 'monospace' : 'inherit',
                 fontWeight: 'bold',
                 mb: 2,
                 mt: 3

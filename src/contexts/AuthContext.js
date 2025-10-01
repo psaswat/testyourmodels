@@ -2,7 +2,8 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   signInWithEmailAndPassword, 
   signOut as firebaseSignOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  updateProfile
 } from 'firebase/auth';
 import { auth } from '../firebase/config';
 
@@ -80,11 +81,36 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUser = async (userData) => {
+    try {
+      if (auth.currentUser) {
+        await updateProfile(auth.currentUser, {
+          displayName: userData.name,
+          // Note: email and photoURL updates require re-authentication
+        });
+        
+        // Update local user state
+        setUser(prev => ({
+          ...prev,
+          name: userData.name,
+          bio: userData.bio || prev.bio,
+        }));
+        
+        return { success: true };
+      }
+      throw new Error('No user is currently signed in');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      throw error;
+    }
+  };
+
   const value = {
     user,
     loading,
     signIn,
     signOut,
+    updateUser,
     isAuthenticated: !!user,
   };
 
